@@ -1,0 +1,97 @@
+project:
+  name: "the-fancy"
+  root: "/home/nickgv/work_projects/the-fancy"
+  language: "en"
+  ui_language: "es"
+
+stack:
+  framework: "nextjs"
+  framework_version: "16.2.9"
+  router: "app"
+  language: "typescript"
+  typescript_strict: true
+  package_manager: "pnpm"
+  ui:
+    library: "shadcn"
+    variant: "radix-nova"
+    components_path: "src/components/ui"
+    tailwind_version: "4"
+    tailwind_import_style: "@import 'tailwindcss'; @import 'shadcn/tailwind.css'"
+  features:
+    - path: "src/features/auth"
+      type: "auth"
+      provider: "firebase"
+      methods: ["email-password"]
+  firebase:
+    auth: true
+    firestore: true
+    config_path: "src/shared/lib/firebase.ts"
+    lazy_init: true
+  structure:
+    app_router: "src/app"
+    shared: "src/shared"
+    features: "src/features"
+    components_ui: "src/components/ui"
+
+tools:
+  lint:
+    runner: "eslint"
+    version: "9"
+    config: "eslint.config.mjs"
+    plugins:
+      - "eslint-config-next/core-web-vitals"
+      - "eslint-config-next/typescript"
+      - "eslint-config-prettier"
+  format:
+    runner: "prettier"
+    version: "3.8.4"
+    config: ".prettierrc"
+    ignore: ".prettierignore"
+  typecheck:
+    runner: "typescript"
+    version: "5"
+    config: "tsconfig.json"
+    strict: true
+  test:
+    runner: "vitest"
+    version: "4.1.9"
+    layers:
+      - unit
+      - integration
+    coverage: false
+    strict_tdd: true
+    setup_file: "src/shared/lib/test-setup.ts"
+    config_file: "vitest.config.ts"
+    environment: "jsdom"
+    commands:
+      run: "pnpm test"
+      watch: "pnpm test:watch"
+
+persistence:
+  mode: "openspec"
+  openspec_root: "openspec"
+  engram_enabled: false
+
+skills:
+  registry_path: ".atl/skill-registry.md"
+  last_scan: "2026-06-22"
+
+conventions:
+  code_language: "en"
+  comments_language: "en"
+  commit_style: "conventional"
+  branch_style: "feature/"
+  pr_size_limit: 400
+
+sdd:
+  initialized: "2026-06-22"
+  version: "3.0"
+  phases:
+    - "explore"
+    - "propose"
+    - "spec"
+    - "design"
+    - "tasks"
+    - "apply"
+    - "verify"
+    - "archive"
