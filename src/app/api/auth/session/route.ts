@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { signSessionCookie } from "@/lib/jose";
 import { verifyFirebaseToken } from "@/lib/verify-firebase-token";
-import { getUserRole } from "@/features/auth/services/auth-service";
+import { getUserRoleAdmin } from "@/features/auth/services/auth-admin-service";
 
 export async function POST(request: Request) {
   try {
@@ -19,8 +19,8 @@ export async function POST(request: Request) {
     // No Admin SDK or service account permissions required.
     const decoded = await verifyFirebaseToken(idToken);
 
-    // Read role from Firestore
-    const role = await getUserRole(decoded.uid);
+    // Read role from Firestore via Admin SDK (bypasses Security Rules)
+    const role = await getUserRoleAdmin(decoded.uid);
 
     // Sign a JWT session cookie
     const sessionToken = await signSessionCookie({
