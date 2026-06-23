@@ -9,6 +9,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import {
   loginUser,
   logoutUser,
@@ -27,6 +28,7 @@ interface AuthContextValue extends AuthState {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [state, setState] = useState<AuthState>({
     user: null,
     isLoading: true,
@@ -120,7 +122,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await logoutUser();
     setState({ user: null, isLoading: false, error: null });
-  }, []);
+    router.push("/login");
+  }, [router]);
 
   return (
     <AuthContext.Provider value={{ ...state, login, logout, refreshRole }}>
