@@ -16,7 +16,7 @@ function getAdminConfig(): AppOptions {
 
   const serviceAccount: ServiceAccount = {
     clientEmail,
-    privateKey: privateKey.replace(/\\n/g, "\n"),
+    privateKey: privateKey.replace(/\\n/g, "\n").replace(/^["']|["']$/g, ""),
     projectId,
   };
 
