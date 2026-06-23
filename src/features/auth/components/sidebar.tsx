@@ -9,6 +9,7 @@ import {
   Users,
   LogOut,
   Scissors,
+  Receipt,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,10 +21,16 @@ const navItems = [
     requiredRole: null as string | null, // all authenticated users
   },
   {
+    label: "Gastos",
+    href: "/dashboard/gastos",
+    icon: Receipt,
+    requiredRole: null as string | null,
+  },
+  {
     label: "Users",
     href: "/admin/users",
     icon: Users,
-    requiredRole: "admin" as const, // admin or super-admin
+    requiredRole: "admin" as const,
   },
 ];
 
