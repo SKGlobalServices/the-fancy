@@ -9,6 +9,7 @@ import { useAuth } from "@/features/auth/hooks/use-auth";
 import { useExpenses } from "@/features/expenses/hooks/use-expenses";
 import { ExpenseTable } from "@/features/expenses/components/expense-table";
 import { ExpenseForm } from "@/features/expenses/components/expense-form";
+import { CategoryManager } from "@/features/expenses/components/category-manager";
 
 export default function GastosPage() {
   const { user } = useAuth();
@@ -16,6 +17,7 @@ export default function GastosPage() {
   const currentMonth = new Date().getMonth();
   const { expenses } = useExpenses(currentYear, user?.uid ?? "");
   const [showForm, setShowForm] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
 
   // Calculate current month total
   const monthTotal = useMemo(() => {
@@ -51,6 +53,14 @@ export default function GastosPage() {
             Administrá los gastos del negocio
           </p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowCategories(true)}
+          className="hidden md:inline-flex"
+        >
+          Administrar categorías
+        </Button>
       </div>
 
       {/* Month summary bar */}
@@ -89,6 +99,25 @@ export default function GastosPage() {
         open={showForm}
         onOpenChange={setShowForm}
       />
+
+      {/* Category manager dialog */}
+      <CategoryManager
+        open={showCategories}
+        onOpenChange={setShowCategories}
+      />
+
+      {/* Mobile categories button */}
+      <div className="fixed bottom-24 right-6 md:hidden">
+        <Button
+          onClick={() => setShowCategories(true)}
+          variant="outline"
+          size="icon"
+          className="h-12 w-12 rounded-full shadow-lg bg-background"
+          aria-label="Administrar categorías"
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 }
