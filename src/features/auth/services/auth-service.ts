@@ -7,13 +7,16 @@ import {
   type User as FirebaseUser,
 } from "firebase/auth";
 import { getFirebaseAuth } from "@/shared/lib/firebase";
-import type { User, LoginCredentials } from "../types";
+import { getFirebaseDb } from "@/shared/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import type { User, LoginCredentials, Role } from "../types";
 
-function mapFirebaseUser(user: FirebaseUser): User {
+function mapFirebaseUser(user: FirebaseUser, role: Role = "user"): User {
   return {
     uid: user.uid,
     email: user.email ?? "",
     displayName: user.displayName ?? user.email?.split("@")[0] ?? "Usuario",
+    role,
   };
 }
 
@@ -24,7 +27,8 @@ export async function loginUser(credentials: LoginCredentials): Promise<User> {
     credentials.email,
     credentials.password,
   );
-  return mapFirebaseUser(result.user);
+  const role = await getUserRole(result.user.uid);
+  return mapFirebaseUser(result.user, role);
 }
 
 export async function registerUser(
@@ -51,9 +55,40 @@ export function onAuthChange(
   const auth = getFirebaseAuth();
   return onAuthStateChanged(auth, (firebaseUser) => {
     if (firebaseUser) {
+      // Return user with default role; the hook will fetch the actual role separately
       callback(mapFirebaseUser(firebaseUser));
     } else {
       callback(null);
     }
   });
+}
+
+export async function getUserRole(uid: string): Promise<Role> {
+  const db = getFirebaseDb();
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    return "user";
+  }
+
+  const data = docSnap.data();
+  const role = data?.role as Role | undefined;
+
+  if (role && ["super-admin", "admin", "user"].includes(role)) {
+    return role;
+  }
+
+  return "user";
+}
+
+export async function getIdToken(): Promise<string | null> {
+  const auth = getFirebaseAuth();
+  const user = auth.currentUser;
+  if (!user) return null;
+  try {
+    return await user.getIdToken();
+  } catch {
+    return null;
+  }
 }
