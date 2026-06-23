@@ -1,7 +1,7 @@
 import "server-only";
 
 import { initializeApp, getApps, cert, type AppOptions, type ServiceAccount } from "firebase-admin/app";
-import { getFirestore, type Firestore } from "firebase-admin/firestore";
+import { getAuth, type Auth } from "firebase-admin/auth";
 
 function getAdminConfig(): AppOptions {
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
@@ -26,14 +26,14 @@ function getAdminConfig(): AppOptions {
   };
 }
 
-let adminDb: Firestore | undefined;
+let adminAuth: Auth | undefined;
 
-export function getAdminDb(): Firestore {
-  if (!adminDb) {
+export function getAdminAuth(): Auth {
+  if (!adminAuth) {
     const apps = getApps();
     const app = apps.length === 0 ? initializeApp(getAdminConfig()) : apps[0]!;
 
-    adminDb = getFirestore(app);
+    adminAuth = getAuth(app);
   }
-  return adminDb;
+  return adminAuth;
 }
