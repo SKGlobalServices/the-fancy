@@ -1,0 +1,70 @@
+# OpenSpec Configuration — the-fancy
+# Generated: 2026-06-22
+# Mode: hybrid (openspec files + Engram persistence)
+
+project:
+  name: the-fancy
+  display: The Fancy
+  description: Administrative system for a beauty salon (estética).
+    Manages sales, expenses, daily cash, employees, commissions,
+    inventory, packages, credits, reservations, and accounting reports.
+  language: es
+  domain: beauty-salon/administration
+
+stack:
+  framework: next 16.2.9
+  ui_library: react 19.2.4
+  styling: tailwind css v4 + tw-animate-css
+  component_library: shadcn/ui (radix-nova style)
+  auth: firebase auth
+  database: firestore
+  schema_validation: zod ^4.4.3
+  package_manager: pnpm
+  language: typescript ^5 (strict)
+
+testing:
+  strict_tdd: false
+  # No test dependencies installed.
+  # Add vitest or jest, @testing-library/react, and optionally playwright for E2E.
+  runner: none
+  unit: none
+  integration: none
+  e2e: none
+  coverage: none
+
+quality:
+  linter: eslint ^9 (eslint-config-next + prettier)
+  formatter: prettier ^3.8.4
+  type_checker: typescript ^5 (strict mode)
+
+conventions:
+  architecture: feature-first under src/features/, shared under src/shared/
+  components: src/components/ui/ (shadcn) + feature-local components
+  auth: src/features/auth/ with hooks, types, services, components
+  modules: 23 functional modules defined in docs/guia.md
+  routing: next.js app router with (auth) route group
+
+phases:
+  propose: openspec/changes/{change-id}/proposal.md
+  spec: openspec/changes/{change-id}/spec.md
+  design: openspec/changes/{change-id}/design.md
+  tasks: openspec/changes/{change-id}/tasks.md
+  apply: src/ (implementation)
+  verify: openspec/changes/{change-id}/verify.md
+  archive: openspec/changes/archive/{change-id}-delta.yaml
+
+plugins:
+  - skill: sdd-propose
+    loaded: true
+  - skill: sdd-spec
+    loaded: true
+  - skill: sdd-design
+    loaded: true
+  - skill: sdd-tasks
+    loaded: true
+  - skill: sdd-apply
+    loaded: true
+  - skill: sdd-verify
+    loaded: true
+  - skill: sdd-archive
+    loaded: true

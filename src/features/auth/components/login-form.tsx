@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "../hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Loader2 } from "lucide-react";
 
 export function LoginForm() {
   const { login, error } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,6 +23,7 @@ export function LoginForm() {
     setIsSubmitting(true);
     try {
       await login({ email, password });
+      router.push("/");
     } catch {
       // Error is handled by the auth context
     } finally {
