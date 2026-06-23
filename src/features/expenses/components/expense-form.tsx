@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Timestamp } from "firebase/firestore";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -159,6 +159,7 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showQuickCategory, setShowQuickCategory] = useState(false);
 
   const isEditing = !!expense;
 
@@ -303,9 +304,27 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
 
             {/* Categoría */}
             <div className="space-y-2">
-              <Label htmlFor="categoria">Categoría</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="categoria">Categoría</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto px-2 py-1 text-xs text-muted-foreground hover:text-primary"
+                  onClick={() => setShowQuickCategory(true)}
+                >
+                  <Plus className="mr-1 h-3 w-3" />
+                  Agregar nueva
+                </Button>
+              </div>
               <Select
-                onValueChange={setCategoria}
+                onValueChange={(v) => {
+                  if (v === "__add__") {
+                    setShowQuickCategory(true);
+                  } else {
+                    setCategoria(v);
+                  }
+                }}
                 value={categoria}
                 disabled={categories.length === 0}
               >
@@ -324,11 +343,23 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
                       Primero crea una categoría
                     </SelectItem>
                   ) : (
-                    categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.name}>
-                        {cat.name}
-                      </SelectItem>
-                    ))
+                    <>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.name}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                      <div className="border-t px-1 py-1">
+                        <button
+                          type="button"
+                          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          onClick={() => setShowQuickCategory(true)}
+                        >
+                          <Plus className="h-4 w-4" />
+                          Agregar nueva categoría
+                        </button>
+                      </div>
+                    </>
                   )}
                 </SelectContent>
               </Select>
@@ -511,6 +542,15 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
             </Button>
           </form>
         </ScrollArea>
+
+        {/* Quick category creation */}
+        <QuickCategoryDialog
+          open={showQuickCategory}
+          onOpenChange={setShowQuickCategory}
+          onCreated={(name) => {
+            setCategoria(name);
+          }}
+        />
       </DialogContent>
     </Dialog>
   );
