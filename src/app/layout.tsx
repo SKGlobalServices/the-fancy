@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Poppins, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -24,20 +25,37 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "The Fancy Faces",
-  description:
-    "The Fancy Faces Beauty Studio — Aruba. You deserve a fancy life!",
-};
+async function getLocale(): Promise<string> {
+  try {
+    const cookieStore = await cookies();
+    return cookieStore.get("NEXT_LOCALE")?.value ?? "en";
+  } catch {
+    return "en";
+  }
+}
 
-export default function RootLayout({
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+
+  return {
+    title: "The Fancy Faces",
+    description:
+      locale === "es"
+        ? "The Fancy Faces Beauty Studio — Aruba. ¡Te mereces una vida fancy!"
+        : "The Fancy Faces Beauty Studio — Aruba. You deserve a fancy life!",
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
     <html
-      lang="es"
+      lang={locale}
       className={`${poppins.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
