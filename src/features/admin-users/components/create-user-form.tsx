@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { getIdToken } from "@/features/auth/services/auth-service";
 import { ROLE_HIERARCHY, canCreateRole } from "@/features/auth/types";
@@ -55,6 +56,8 @@ const initialForm: FormData = {
 
 export function CreateUserForm() {
   const { user } = useAuth();
+  const t = useTranslations("users");
+  const common = useTranslations("common");
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,18 +77,18 @@ export function CreateUserForm() {
 
   function validate(): FormErrors {
     const errs: FormErrors = {};
-    if (!form.email) errs.email = "Email is required";
+    if (!form.email) errs.email = t("validation.emailRequired");
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      errs.email = "Invalid email address";
+      errs.email = t("validation.emailInvalid");
 
-    if (!form.password) errs.password = "Password is required";
+    if (!form.password) errs.password = t("validation.passwordRequired");
     else if (form.password.length < 6)
-      errs.password = "Password must be at least 6 characters";
+      errs.password = t("validation.passwordMin");
 
-    if (!form.displayName) errs.displayName = "Display name is required";
+    if (!form.displayName) errs.displayName = t("validation.displayNameRequired");
 
     if (!canCreateRole(user?.role as Role, form.role))
-      errs.role = "You don't have permission to assign this role";
+      errs.role = t("validation.rolePermission");
 
     return errs;
   }
@@ -123,20 +126,24 @@ export function CreateUserForm() {
           data.details?.[0]?.message ??
           data.message ??
           data.error ??
-          "Failed to create user";
+          t("toast.createError");
         throw new Error(errorMessage);
       }
 
       setSuccess(data);
-      toast.success("User created successfully", {
-        description: `${data.displayName} (${data.email}) has been created as ${ROLE_LABELS[data.role as Role]}.`,
+      toast.success(t("toast.created"), {
+        description: t("toast.createdDesc", {
+          displayName: data.displayName,
+          email: data.email,
+          role: ROLE_LABELS[data.role as Role],
+        }),
       });
       resetForm();
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "An unexpected error occurred";
       setErrors({ general: message });
-      toast.error("Failed to create user", {
+      toast.error(t("toast.createError"), {
         description: message,
       });
     } finally {
@@ -151,10 +158,10 @@ export function CreateUserForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <AlertCircle className="h-5 w-5" />
-            Access Denied
+            {t("accessDenied.title")}
           </CardTitle>
           <CardDescription>
-            You do not have permission to create users.
+            {t("accessDenied.description")}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -164,17 +171,17 @@ export function CreateUserForm() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Create User</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t("form.cardTitle")}</h1>
         <p className="mt-1 text-muted-foreground">
-          Add a new user to the system. Fields marked with * are required.
+          {t("form.cardDescription")}
         </p>
       </div>
 
       <Card className="max-w-lg">
         <CardHeader>
-          <CardTitle>User Details</CardTitle>
+          <CardTitle>{t("form.cardTitle")}</CardTitle>
           <CardDescription>
-            Enter the details for the new user account.
+            {t("form.cardDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -184,7 +191,7 @@ export function CreateUserForm() {
               <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 p-4">
                 <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
                   <CheckCircle2 className="h-5 w-5" />
-                  <span className="font-medium">User created</span>
+                  <span className="font-medium">{t("toast.created")}</span>
                 </div>
                 <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-500">
                   {success.displayName} ({success.email}) — {ROLE_LABELS[success.role]}
@@ -205,12 +212,12 @@ export function CreateUserForm() {
             {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
-                Email *
+                {t("form.email")} *
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="user@example.com"
+                placeholder={t("form.emailPlaceholder")}
                 value={form.email}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, email: e.target.value }))
@@ -227,12 +234,12 @@ export function CreateUserForm() {
             {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">
-                Password *
+                {t("form.password")} *
               </Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Minimum 6 characters"
+                placeholder={t("form.passwordPlaceholder")}
                 value={form.password}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, password: e.target.value }))
@@ -249,12 +256,12 @@ export function CreateUserForm() {
             {/* Display Name */}
             <div className="space-y-2">
               <Label htmlFor="displayName" className="text-sm font-medium">
-                Display Name *
+                {t("form.displayName")} *
               </Label>
               <Input
                 id="displayName"
                 type="text"
-                placeholder="Jane Doe"
+                placeholder={t("form.displayNamePlaceholder")}
                 value={form.displayName}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, displayName: e.target.value }))
@@ -272,7 +279,7 @@ export function CreateUserForm() {
             {/* Role */}
             <div className="space-y-2">
               <Label htmlFor="role" className="text-sm font-medium">
-                Role *
+                {t("form.role")} *
               </Label>
               <Select
                 value={form.role}
@@ -282,12 +289,12 @@ export function CreateUserForm() {
                 disabled={isSubmitting || availableRoles.length <= 1}
               >
                 <SelectTrigger className="h-11">
-                  <SelectValue placeholder="Select a role" />
+                  <SelectValue placeholder={t("form.rolePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableRoles.map((role) => (
                     <SelectItem key={role} value={role}>
-                      {ROLE_LABELS[role]}
+                      {t(`roles.${role}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -306,10 +313,10 @@ export function CreateUserForm() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating user...
+                  {common("creating")}
                 </>
               ) : (
-                "Create User"
+                t("form.submit")
               )}
             </Button>
           </form>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Plus, Pencil, Trash2, X, Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,8 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
   const { user } = useAuth();
   const { categories, isLoading, error, addCategory, editCategory, removeCategory } =
     useCategories(user?.uid ?? "");
+  const t = useTranslations("categories");
+  const common = useTranslations("common");
 
   // Add category state
   const [newName, setNewName] = useState("");
@@ -72,10 +75,10 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
     try {
       await addCategory(trimmed);
       setNewName("");
-      toast.success(`Categoría "${trimmed}" creada`);
+      toast.success(t("toast.created"));
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Error al crear la categoría";
+        err instanceof Error ? err.message : t("error.create");
       setAddError(message);
     } finally {
       setIsAdding(false);
@@ -95,10 +98,10 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
       await editCategory(id, trimmed);
       setEditingId(null);
       setEditingName("");
-      toast.success("Categoría renombrada");
+      toast.success(t("toast.renamed"));
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Error al renombrar";
+        err instanceof Error ? err.message : t("error.rename");
       setRenameError(message);
     } finally {
       setIsRenaming(false);
@@ -125,10 +128,10 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
     try {
       await removeCategory(deletingCategory.id, deletingCategory.name);
       setDeletingCategory(null);
-      toast.success(`Categoría "${deletingCategory.name}" eliminada`);
+      toast.success(t("toast.deleted"));
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Error al eliminar";
+        err instanceof Error ? err.message : t("error.delete");
       toast.error(message);
     }
   }
@@ -140,11 +143,11 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Administrar categorías</DialogTitle>
+            <DialogTitle>{t("title")}</DialogTitle>
           </DialogHeader>
           <div className="rounded-lg bg-destructive/10 p-4 text-center">
             <p className="text-destructive font-medium">
-              Error al cargar categorías: {error}
+              {t("error.create")}: {error}
             </p>
           </div>
         </DialogContent>
@@ -159,19 +162,19 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
-            <DialogTitle>Administrar categorías</DialogTitle>
+            <DialogTitle>{t("title")}</DialogTitle>
             <DialogDescription>
-              Creá, renombrá y eliminá categorías de gastos
+              {t("description")}
             </DialogDescription>
           </DialogHeader>
 
           {/* Add new category */}
           <div className="space-y-2">
-            <Label htmlFor="new-category">Nueva categoría</Label>
+            <Label htmlFor="new-category">{t("form.newLabel")}</Label>
             <div className="flex gap-2">
               <Input
                 id="new-category"
-                placeholder="Nombre de la categoría"
+                placeholder={t("form.namePlaceholder")}
                 value={newName}
                 onChange={(e) => {
                   setNewName(e.target.value);
@@ -186,7 +189,7 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
                 onClick={handleAdd}
                 disabled={isAdding || !newName.trim()}
                 size="icon"
-                aria-label="Agregar categoría"
+                aria-label={common("add")}
               >
                 {isAdding ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -208,10 +211,10 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
           ) : categories.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
               <p className="text-lg font-medium text-muted-foreground">
-                No hay categorías creadas
+                {t("empty.none")}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Creá tu primera categoría para empezar a organizar los gastos
+                {t("empty.createFirst")}
               </p>
             </div>
           ) : (
@@ -243,7 +246,7 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
                             variant="ghost"
                             onClick={() => handleRename(cat.id)}
                             disabled={isRenaming || !editingName.trim()}
-                            aria-label="Guardar"
+                            aria-label={common("save")}
                           >
                             <Check className="h-4 w-4" />
                           </Button>
@@ -252,7 +255,7 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
                             variant="ghost"
                             onClick={cancelRename}
                             disabled={isRenaming}
-                            aria-label="Cancelar"
+                            aria-label={common("cancel")}
                           >
                             <X className="h-4 w-4" />
                           </Button>
@@ -272,7 +275,7 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
                             variant="ghost"
                             className="h-8 w-8"
                             onClick={() => startRename(cat.id, cat.name)}
-                            aria-label="Renombrar"
+                            aria-label={common("edit")}
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -286,7 +289,7 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
                                 name: cat.name,
                               })
                             }
-                            aria-label="Eliminar"
+                            aria-label={common("delete")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -310,20 +313,19 @@ export function CategoryManager({ open, onOpenChange }: CategoryManagerProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar categoría?</AlertDialogTitle>
+            <AlertDialogTitle>{t("delete.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Se eliminará la categoría &quot;{deletingCategory?.name}&quot;. Solo se
-              puede eliminar si no hay gastos que la usen.
+              {t("delete.description", { name: deletingCategory?.name ?? "" })}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleDelete}
             >
-              Eliminar
+              {t("delete.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
