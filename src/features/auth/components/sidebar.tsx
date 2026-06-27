@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../hooks/use-auth";
@@ -8,7 +9,6 @@ import {
   LayoutDashboard,
   Users,
   LogOut,
-  Scissors,
   Receipt,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,8 +42,8 @@ export function Sidebar() {
     <aside className="flex h-full w-64 flex-col border-r bg-background">
       {/* Brand */}
       <div className="flex h-16 items-center gap-2 border-b px-6">
-        <Scissors className="h-5 w-5 text-primary" />
-        <span className="text-lg font-semibold tracking-tight">The Fancy</span>
+        <Image src="/logo_navbar.webp" alt="The Fancy Faces" width={32} height={32} priority unoptimized className="rounded-full" />
+        <span className="text-lg font-semibold tracking-tight">The Fancy Faces</span>
       </div>
 
       {/* Navigation */}
