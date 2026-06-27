@@ -3,6 +3,7 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,12 +19,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { Sidebar } from "@/features/auth/components/sidebar";
+import { LanguageSwitcher } from "@/features/i18n/components/language-switcher";
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export function DashboardShell({ children }: { children: ReactNode }) {
   const { user, isLoading, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const t = useTranslations("common");
 
   // Auth guard
   useEffect(() => {
@@ -67,7 +70,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             variant="ghost"
             size="icon"
             className="absolute left-4 top-3 z-50 md:hidden"
-            aria-label="Abrir menú"
+            aria-label={t("openMenu")}
           >
             <Menu className="h-5 w-5" />
           </Button>
@@ -84,12 +87,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           {/* Spacer for mobile hamburger */}
           <div className="flex-1 md:hidden" />
 
+          <LanguageSwitcher />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 className="flex items-center gap-2"
-                aria-label="Menú de usuario"
+                aria-label={t("openMenu")}
               >
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="text-xs">
@@ -119,7 +124,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 }}
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                Cerrar sesión
+                {t("signOut")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

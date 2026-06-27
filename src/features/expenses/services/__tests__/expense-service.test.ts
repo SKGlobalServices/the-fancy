@@ -65,10 +65,10 @@ function createValidFormData() {
     categoria: "Insumos",
     descripcion: "Shampoo profesional",
     proveedorLugar: "Distribuidora Belleza",
-    metodoPago: "Transferencia" as const,
+    metodoPago: "transfer" as const,
     monto: 15000.5,
-    tieneRecibo: "Sí" as const,
-    registradoPor: "Ana Paula" as const,
+    tieneRecibo: "yes" as const,
+    registradoPor: "anaPaula" as const,
   };
 }
 

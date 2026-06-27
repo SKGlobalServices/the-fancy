@@ -13,7 +13,7 @@ import {
   type ColumnFiltersState,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS, es } from "date-fns/locale";
 import {
   Search,
   ChevronDown,
@@ -24,7 +24,10 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
+  RotateCcw,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -73,23 +76,17 @@ import { CalendarIcon } from "lucide-react";
 import { useExpenses } from "../hooks/use-expenses";
 import { useCategories } from "../hooks/use-categories";
 import { useAuth } from "@/features/auth/hooks/use-auth";
-import type { Expense, PaymentMethod } from "../types";
-import { PaymentMethods } from "../types";
+import type { Expense } from "../types";
+import { PaymentMethods, RegisteredByValues } from "../types";
 import { ExpenseForm } from "./expense-form";
+import { formatCurrency } from "@/shared/lib/currency";
 
 // ── Helpers ──────────────────────────────────────────────────
 
-function formatMonto(value: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 2,
-  }).format(value);
-}
-
-function formatFecha(ts: any): string {
+function formatFecha(ts: any, localeKey: string): string {
   if (!ts?.toDate) return "";
-  return format(ts.toDate(), "dd/MM/yyyy", { locale: es });
+  const dateLocale = localeKey === "es" ? es : enUS;
+  return format(ts.toDate(), "dd/MM/yyyy", { locale: dateLocale });
 }
 
 // ── Column Helper ────────────────────────────────────────────
@@ -100,6 +97,7 @@ const columnHelper = createColumnHelper<Expense>();
 
 export function ExpenseTable() {
   const { user } = useAuth();
+  const locale = useLocale();
   const currentYear = new Date().getFullYear();
   const {
     expenses,
@@ -118,20 +116,19 @@ export function ExpenseTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-  // Date range filter state
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
 
-  // Edit/delete state
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>();
   const [showForm, setShowForm] = useState(false);
   const [deletingExpense, setDeletingExpense] = useState<Expense | undefined>();
 
-  // Filter values
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
 
   const { categories } = useCategories(user?.uid ?? "");
+  const t = useTranslations("expenses");
+  const common = useTranslations("common");
 
   // ── Date filter ──────────────────────────────────────────
 
@@ -170,48 +167,62 @@ export function ExpenseTable() {
     });
   }, [expenses, dateFrom, dateTo, categoryFilter, paymentFilter, globalFilter]);
 
+  // ── Translate helpers ────────────────────────────────────
+
+  function translatePaymentMethod(method: string): string {
+    return t(`paymentMethods.${method}`);
+  }
+
+  function translateRegisteredBy(person: string): string {
+    return t(`registeredBy.${person}`);
+  }
+
+  function translateReceipt(value: string): string {
+    return t(`hasReceipt.${value}`);
+  }
+
   // ── Table instance ───────────────────────────────────────
 
   const columns = useMemo(
     () => [
       columnHelper.accessor("fecha", {
-        header: "Fecha",
-        cell: (info) => formatFecha(info.getValue()),
+        header: t("columns.date"),
+        cell: (info) => formatFecha(info.getValue(), locale),
         enableSorting: true,
       }),
       columnHelper.accessor("categoria", {
-        header: "Categoría",
+        header: t("columns.category"),
         cell: (info) => (
           <Badge variant="outline">{info.getValue()}</Badge>
         ),
         enableSorting: true,
       }),
       columnHelper.accessor("descripcion", {
-        header: "Descripción",
+        header: t("columns.description"),
         cell: (info) => info.getValue() ?? "-",
       }),
       columnHelper.accessor("proveedorLugar", {
-        header: "Proveedor / Lugar",
+        header: t("columns.provider"),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor("metodoPago", {
-        header: "Método de pago",
-        cell: (info) => info.getValue(),
+        header: t("columns.paymentMethod"),
+        cell: (info) => translatePaymentMethod(info.getValue()),
         enableSorting: false,
       }),
       columnHelper.accessor("monto", {
-        header: "Monto",
-        cell: (info) => formatMonto(info.getValue()),
+        header: t("columns.amount"),
+        cell: (info) => formatCurrency(info.getValue(), locale),
         enableSorting: true,
       }),
       columnHelper.accessor("tieneRecibo", {
-        header: "Recibo",
-        cell: (info) => info.getValue(),
+        header: t("columns.receipt"),
+        cell: (info) => translateReceipt(info.getValue()),
         enableSorting: false,
       }),
       columnHelper.accessor("registradoPor", {
-        header: "Registrado por",
-        cell: (info) => info.getValue(),
+        header: t("columns.registeredBy"),
+        cell: (info) => translateRegisteredBy(info.getValue()),
         enableSorting: false,
       }),
       columnHelper.display({
@@ -231,22 +242,8 @@ export function ExpenseTable() {
                     restoreExpense(row.original.id);
                   }}
                 >
-                  <svg
-                    className="mr-2 h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
-                  </svg>
-                  Restaurar
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  {common("restore")}
                 </DropdownMenuItem>
               ) : (
                 <>
@@ -257,14 +254,14 @@ export function ExpenseTable() {
                     }}
                   >
                     <Pencil className="mr-2 h-4 w-4" />
-                    Editar
+                    {common("edit")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive"
                     onClick={() => setDeletingExpense(row.original)}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Eliminar
+                    {common("delete")}
                   </DropdownMenuItem>
                 </>
               )}
@@ -273,7 +270,7 @@ export function ExpenseTable() {
         ),
       }),
     ],
-    [showDeleted, restoreExpense],
+    [showDeleted, restoreExpense, t, common, locale],
   );
 
   const table = useReactTable({
@@ -304,7 +301,7 @@ export function ExpenseTable() {
     return (
       <div className="rounded-lg bg-destructive/10 p-8 text-center">
         <p className="text-destructive font-medium">
-          Error al cargar gastos: {error}
+          {t("title")}: {error}
         </p>
       </div>
     );
@@ -369,23 +366,23 @@ export function ExpenseTable() {
           {expenses.length === 0 ? (
             <>
               <p className="text-lg font-medium text-muted-foreground">
-                No hay gastos registrados
+                {t("empty.noExpenses")}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                    Comenzá agregando tu primer gasto
+                {t("empty.addFirst")}
               </p>
             </>
           ) : (
             <>
               <p className="text-lg font-medium text-muted-foreground">
-                No se encontraron gastos con los filtros actuales
+                {t("empty.noMatch")}
               </p>
               <Button
                 variant="outline"
                 className="mt-4"
                 onClick={clearFilters}
               >
-                Limpiar filtros
+                {common("clearFilters")}
               </Button>
             </>
           )}
@@ -413,20 +410,20 @@ export function ExpenseTable() {
           onClick={() => setShowDeleted(!showDeleted)}
           type="button"
         >
-          {showDeleted ? "Mostrando eliminados" : "Mostrar eliminados"}
+          {showDeleted ? t("showingDeleted") : t("showDeleted")}
         </Button>
       </div>
       <div className="flex flex-wrap items-end gap-3">
         {/* Global search */}
         <div className="flex-1 min-w-[200px]">
           <Label htmlFor="search" className="sr-only">
-            Buscar
+            {common("search")}
           </Label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="search"
-              placeholder="Buscar gastos..."
+              placeholder={t("filters.search")}
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="pl-9"
@@ -436,7 +433,7 @@ export function ExpenseTable() {
 
         {/* Date from */}
         <div className="w-[180px]">
-          <Label className="text-xs text-muted-foreground">Desde</Label>
+          <Label className="text-xs text-muted-foreground">{t("filters.dateFrom")}</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -447,7 +444,7 @@ export function ExpenseTable() {
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {dateFrom
                   ? format(dateFrom, "dd/MM/yyyy")
-                  : "Desde"}
+                  : t("filters.dateFrom")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -462,7 +459,7 @@ export function ExpenseTable() {
 
         {/* Date to */}
         <div className="w-[180px]">
-          <Label className="text-xs text-muted-foreground">Hasta</Label>
+          <Label className="text-xs text-muted-foreground">{t("filters.dateTo")}</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -471,7 +468,7 @@ export function ExpenseTable() {
                 type="button"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateTo ? format(dateTo, "dd/MM/yyyy") : "Hasta"}
+                {dateTo ? format(dateTo, "dd/MM/yyyy") : t("filters.dateTo")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -487,14 +484,14 @@ export function ExpenseTable() {
         {/* Category filter */}
         <div className="w-[160px]">
           <Label htmlFor="cat-filter" className="sr-only">
-            Categoría
+            {t("filters.category")}
           </Label>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger id="cat-filter" aria-label="Categoría">
-              <SelectValue placeholder="Categoría" />
+            <SelectTrigger id="cat-filter" aria-label={t("filters.category")}>
+              <SelectValue placeholder={t("filters.category")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
+              <SelectItem value="all">{common("all")}</SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat.id} value={cat.name}>
                   {cat.name}
@@ -507,17 +504,17 @@ export function ExpenseTable() {
         {/* Payment method filter */}
         <div className="w-[160px]">
           <Label htmlFor="pay-filter" className="sr-only">
-            Método de pago
+            {t("filters.paymentMethod")}
           </Label>
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-            <SelectTrigger id="pay-filter" aria-label="Método de pago">
-              <SelectValue placeholder="Método de pago" />
+            <SelectTrigger id="pay-filter" aria-label={t("filters.paymentMethod")}>
+              <SelectValue placeholder={t("filters.paymentMethod")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="all">{common("all")}</SelectItem>
               {PaymentMethods.map((method) => (
                 <SelectItem key={method} value={method}>
-                  {method}
+                  {translatePaymentMethod(method)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -540,14 +537,13 @@ export function ExpenseTable() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar gasto?</AlertDialogTitle>
+            <AlertDialogTitle>{t("delete.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción moverá el gasto a la papelera. Podés restaurarlo
-              después si es necesario.
+              {t("delete.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={async () => {
@@ -557,7 +553,7 @@ export function ExpenseTable() {
                 }
               }}
             >
-              Eliminar
+              {t("delete.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -622,8 +618,10 @@ export function ExpenseTable() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>
-            Página {table.getState().pagination.pageIndex + 1} de{" "}
-            {table.getPageCount()}
+            {common("pageOf", {
+              page: table.getState().pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </span>
           <Select
             value={String(table.getState().pagination.pageSize)}
@@ -631,7 +629,7 @@ export function ExpenseTable() {
               table.setPageSize(Number(value));
             }}
           >
-            <SelectTrigger className="w-[80px]" aria-label="Filas por página">
+            <SelectTrigger className="w-[80px]" aria-label={common("rowsPerPage")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -652,7 +650,7 @@ export function ExpenseTable() {
             disabled={!table.getCanPreviousPage()}
           >
             <ChevronLeft className="h-4 w-4" />
-            Anterior
+            {common("previous")}
           </Button>
           <Button
             variant="outline"
@@ -660,7 +658,7 @@ export function ExpenseTable() {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Siguiente
+            {common("next")}
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Timestamp } from "firebase/firestore";
-import { expenseSchema } from "../index";
+import { expenseSchema, PaymentMethods, RegisteredByValues, SiNoValues } from "../index";
 
 function makeValidData() {
   return {
@@ -8,11 +8,11 @@ function makeValidData() {
     categoria: "Insumos",
     descripcion: "Compra de shampoo profesional",
     proveedorLugar: "Distribuidora Belleza S.A.",
-    metodoPago: "Transferencia" as const,
+    metodoPago: "transfer" as const,
     monto: 15000.5,
-    tieneRecibo: "Sí" as const,
+    tieneRecibo: "yes" as const,
     numeroReciboFoto: "FAC-001",
-    registradoPor: "Ana Paula" as const,
+    registradoPor: "anaPaula" as const,
     observaciones: "Pago mensual",
   };
 }
@@ -53,15 +53,7 @@ describe("expenseSchema", () => {
     });
 
     it("accepts expense with all payment methods", () => {
-      const methods = [
-        "Efectivo",
-        "Transferencia",
-        "Tarjeta",
-        "Crédito",
-        "Abono",
-        "Otro",
-      ] as const;
-      for (const metodoPago of methods) {
+      for (const metodoPago of PaymentMethods) {
         const result = expenseSchema.safeParse({
           ...makeValidData(),
           metodoPago,
@@ -71,15 +63,7 @@ describe("expenseSchema", () => {
     });
 
     it("accepts expense with all registeredBy values", () => {
-      const personas = [
-        "Ana Paula",
-        "Leandro",
-        "Mónica",
-        "Lizeth",
-        "Dueña",
-        "Otro",
-      ] as const;
-      for (const registradoPor of personas) {
+      for (const registradoPor of RegisteredByValues) {
         const result = expenseSchema.safeParse({
           ...makeValidData(),
           registradoPor,
@@ -89,7 +73,7 @@ describe("expenseSchema", () => {
     });
 
     it("accepts expense with all SiNo values", () => {
-      for (const tieneRecibo of ["Sí", "No"] as const) {
+      for (const tieneRecibo of SiNoValues) {
         const result = expenseSchema.safeParse({
           ...makeValidData(),
           tieneRecibo,

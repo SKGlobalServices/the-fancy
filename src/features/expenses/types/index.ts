@@ -1,31 +1,31 @@
 import { z } from "zod";
 import { Timestamp } from "firebase/firestore";
 
-// ── Union Types ──────────────────────────────────────────────
+// ── Union Types (key-based for translation) ────────────────────
 
 export const PaymentMethods = [
-  "Efectivo",
-  "Transferencia",
-  "Tarjeta",
-  "Crédito",
-  "Abono",
-  "Otro",
+  "cash",
+  "transfer",
+  "card",
+  "credit",
+  "creditNote",
+  "other",
 ] as const;
 
 export type PaymentMethod = (typeof PaymentMethods)[number];
 
 export const RegisteredByValues = [
-  "Ana Paula",
-  "Leandro",
-  "Mónica",
-  "Lizeth",
-  "Dueña",
-  "Otro",
+  "anaPaula",
+  "leandro",
+  "monica",
+  "lizeth",
+  "owner",
+  "other",
 ] as const;
 
 export type RegisteredBy = (typeof RegisteredByValues)[number];
 
-export const SiNoValues = ["Sí", "No"] as const;
+export const SiNoValues = ["yes", "no"] as const;
 
 export type SiNo = (typeof SiNoValues)[number];
 

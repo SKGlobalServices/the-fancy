@@ -1,9 +1,7 @@
 "use client";
 
-import { useAuth } from "@/features/auth/hooks/use-auth";
-import { useCategories } from "@/features/expenses/hooks/use-categories";
-import { CategoryManager } from "@/features/expenses/components/category-manager";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -21,6 +19,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+import { useAuth } from "@/features/auth/hooks/use-auth";
+import { useCategories } from "@/features/expenses/hooks/use-categories";
+
 export default function CategoriasPage() {
   const { user } = useAuth();
   const {
@@ -31,17 +32,14 @@ export default function CategoriasPage() {
     editCategory,
     removeCategory,
   } = useCategories(user?.uid ?? "");
+  const t = useTranslations("categories");
+  const common = useTranslations("common");
 
-  // Add state
   const [newName, setNewName] = useState("");
   const [isAdding, setIsAdding] = useState(false);
-
-  // Rename state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [isRenaming, setIsRenaming] = useState(false);
-
-  // Delete state
   const [deletingCategory, setDeletingCategory] = useState<{
     id: string;
     name: string;
@@ -50,16 +48,13 @@ export default function CategoriasPage() {
   async function handleAdd() {
     const trimmed = newName.trim();
     if (!trimmed) return;
-
     setIsAdding(true);
     try {
       await addCategory(trimmed);
       setNewName("");
-      toast.success(`Categoría "${trimmed}" creada`);
+      toast.success(t("toast.created"));
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Error al crear la categoría",
-      );
+      toast.error(err instanceof Error ? err.message : t("error.create"));
     } finally {
       setIsAdding(false);
     }
@@ -68,61 +63,47 @@ export default function CategoriasPage() {
   async function handleRename(id: string) {
     const trimmed = editingName.trim();
     if (!trimmed) return;
-
     setIsRenaming(true);
     try {
       await editCategory(id, trimmed);
       setEditingId(null);
       setEditingName("");
-      toast.success("Categoría renombrada");
+      toast.success(t("toast.renamed"));
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Error al renombrar",
-      );
+      toast.error(err instanceof Error ? err.message : t("error.rename"));
     } finally {
       setIsRenaming(false);
     }
-  }
-
-  function startRename(id: string, name: string) {
-    setEditingId(id);
-    setEditingName(name);
   }
 
   async function handleDelete() {
     if (!deletingCategory) return;
     try {
       await removeCategory(deletingCategory.id, deletingCategory.name);
-      toast.success(`Categoría "${deletingCategory.name}" eliminada`);
+      toast.success(t("toast.deleted"));
       setDeletingCategory(null);
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Error al eliminar",
-      );
+      toast.error(err instanceof Error ? err.message : t("error.delete"));
     }
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Categorías</h1>
-          <p className="text-sm text-muted-foreground">
-            Administrá las categorías de gastos
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
       </div>
 
-      {/* Add category */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Nueva categoría</CardTitle>
+          <CardTitle className="text-base">{t("form.newLabel")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
             <Input
-              placeholder="Nombre de la categoría"
+              placeholder={t("form.namePlaceholder")}
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => {
@@ -140,16 +121,15 @@ export default function CategoriasPage() {
               ) : (
                 <Plus className="mr-2 h-4 w-4" />
               )}
-              Agregar
+              {common("add")}
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Category list */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Categorías existentes</CardTitle>
+          <CardTitle className="text-base">{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -159,16 +139,16 @@ export default function CategoriasPage() {
           ) : error ? (
             <div className="rounded-lg bg-destructive/10 p-4 text-center">
               <p className="text-destructive font-medium">
-                Error: {error}
+                {t("error.create")}: {error}
               </p>
             </div>
           ) : categories.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
               <p className="text-lg font-medium text-muted-foreground">
-                No hay categorías creadas
+                {t("empty.none")}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Creá tu primera categoría usando el formulario de arriba
+                {t("empty.createFirst")}
               </p>
             </div>
           ) : (
@@ -198,7 +178,7 @@ export default function CategoriasPage() {
                         onClick={() => handleRename(cat.id)}
                         disabled={isRenaming || !editingName.trim()}
                       >
-                        Guardar
+                        {common("save")}
                       </Button>
                       <Button
                         size="sm"
@@ -209,7 +189,7 @@ export default function CategoriasPage() {
                         }}
                         disabled={isRenaming}
                       >
-                        Cancelar
+                        {common("cancel")}
                       </Button>
                     </div>
                   ) : (
@@ -219,8 +199,11 @@ export default function CategoriasPage() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => startRename(cat.id, cat.name)}
-                          aria-label="Renombrar"
+                          onClick={() => {
+                            setEditingId(cat.id);
+                            setEditingName(cat.name);
+                          }}
+                          aria-label={common("edit")}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -234,7 +217,7 @@ export default function CategoriasPage() {
                               name: cat.name,
                             })
                           }
-                          aria-label="Eliminar"
+                          aria-label={common("delete")}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -248,7 +231,6 @@ export default function CategoriasPage() {
         </CardContent>
       </Card>
 
-      {/* Delete confirmation */}
       <AlertDialog
         open={!!deletingCategory}
         onOpenChange={(open) => {
@@ -257,19 +239,18 @@ export default function CategoriasPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar categoría?</AlertDialogTitle>
+            <AlertDialogTitle>{t("delete.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Se eliminará la categoría &quot;{deletingCategory?.name}&quot;.
-              Solo se puede eliminar si no hay gastos que la usen.
+              {t("delete.description", { name: deletingCategory?.name ?? "" })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleDelete}
             >
-              Eliminar
+              {t("delete.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

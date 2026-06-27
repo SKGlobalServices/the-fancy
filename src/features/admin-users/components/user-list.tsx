@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { getIdToken } from "@/features/auth/services/auth-service";
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import {
   Table,
   TableBody,
@@ -26,6 +28,8 @@ interface UserRecord {
 
 export function UserList() {
   const { user } = useAuth();
+  const locale = useLocale();
+  const t = useTranslations("users");
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,17 +94,17 @@ export function UserList() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nombre</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Rol</TableHead>
-            <TableHead>Creado</TableHead>
+            <TableHead>{t("list.headers.name")}</TableHead>
+            <TableHead>{t("list.headers.email")}</TableHead>
+            <TableHead>{t("list.headers.role")}</TableHead>
+            <TableHead>{t("list.headers.created")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
-                No hay usuarios
+                {t("list.empty")}
               </TableCell>
             </TableRow>
           ) : (
@@ -110,12 +114,12 @@ export function UserList() {
                 <TableCell className="text-muted-foreground">{u.email}</TableCell>
                 <TableCell>
                   <Badge className={roleBadge(u.role)} variant="secondary">
-                    {u.role}
+                    {t(`roles.${u.role}`)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {u.createdAt
-                    ? new Intl.DateTimeFormat("es-AR", {
+                    ? new Intl.DateTimeFormat(locale === "es" ? "es-AR" : "en-US", {
                         dateStyle: "short",
                         timeStyle: "short",
                       }).format(new Date(u.createdAt))

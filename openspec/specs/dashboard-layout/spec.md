@@ -1,6 +1,127 @@
-# Delta for Dashboard Layout
+# Dashboard Layout Specification
 
-## MODIFIED Requirements
+## Purpose
+
+Defines the dashboard layout structure including the top header bar, language switcher, main content area, mobile sheet sidebar, loading states, and decorative elements.
+
+---
+
+## Requirements
+
+### Requirement: Top Bar Header with Language Switcher
+
+The top header bar MUST use:
+- Background: `bg-background` (white #FFFFFF for the bar itself)
+- Border bottom: `border-b border-border` (#DBD4CE warm neutral)
+- User avatar dropdown trigger: `text-foreground` (#505050)
+
+The top header bar MUST include a language switcher dropdown in the user menu area (next to the user avatar).
+
+The switcher MUST:
+- Display current locale label ("English" / "Español")
+- Allow switching to the other locale
+- Navigate to the same path under the new locale (e.g., `/en/dashboard/gastos` → `/es/dashboard/gastos`)
+- Update the `NEXT_LOCALE` cookie
+- Be fully accessible (keyboard navigation, ARIA labels, focus management)
+
+The switcher MUST NOT appear on the login page.
+
+#### Scenario: Header bar has warm neutral border
+
+- GIVEN the dashboard layout renders
+- WHEN the top header is visible
+- THEN the bottom border is #DBD4CE (warm neutral)
+- AND user avatar text is #505050
+
+#### Scenario: Language switcher visible in dashboard
+
+- GIVEN an authenticated user on `/en/dashboard`
+- WHEN the top header renders
+- THEN a language switcher dropdown is visible next to the user avatar
+- AND the current locale shows as "English"
+
+#### Scenario: Switching locale updates URL and cookie
+
+- GIVEN a user on `/en/dashboard/gastos` clicks "Español"
+- WHEN the switcher handles the click
+- THEN the browser navigates to `/es/dashboard/gastos`
+- AND the `NEXT_LOCALE` cookie is set to `es`
+- AND the page re-renders with Spanish translations
+
+#### Scenario: Switcher preserves current path
+
+- GIVEN a user on `/en/admin/users` switches to Spanish
+- WHEN navigation completes
+- THEN the URL is `/es/admin/users` (same path, different locale)
+- AND NOT redirected to dashboard home
+
+#### Scenario: Switcher not visible on login page
+
+- GIVEN a user visits `/login`
+- WHEN the page renders
+- THEN no language switcher is present in the header
+- AND the page remains 100% English
+
+#### Scenario: Switcher accessible via keyboard
+
+- GIVEN focus is on the language switcher trigger
+- WHEN the user presses Enter or Space
+- THEN the dropdown opens
+- WHEN the user presses ArrowDown/ArrowUp
+- THEN focus moves between options
+- WHEN the user presses Enter on an option
+- THEN the locale changes and dropdown closes
+
+---
+
+### Requirement: User Menu Labels via Translation
+
+The user dropdown menu MUST use translation keys for "Sign out" / "Cerrar sesión" instead of hardcoded text.
+
+The mobile hamburger button MUST use a translation key for its `aria-label`.
+
+#### Scenario: Sign out label translates
+
+- GIVEN locale is `en`
+- WHEN the user menu opens
+- THEN the logout item shows "Sign out"
+- GIVEN locale is `es`
+- WHEN the user menu opens
+- THEN the logout item shows "Cerrar sesión"
+
+#### Scenario: Mobile menu button label translates
+
+- GIVEN locale is `en` on mobile viewport
+- WHEN the hamburger button renders
+- THEN `aria-label="Open menu"`
+- GIVEN locale is `es` on mobile viewport
+- WHEN the hamburger button renders
+- THEN `aria-label="Abrir menú"`
+
+---
+
+### Requirement: Language Switcher Component
+
+A new `LanguageSwitcher` Client Component MUST be created at `src/features/i18n/components/language-switcher.tsx` that:
+- Uses `useLocale()` and `useRouter()` from next-intl navigation
+- Renders a `DropdownMenu` with two items: English and Español
+- On selection, calls `router.push(pathname, { locale: newLocale })`
+- Shows current locale with a check mark or similar indicator
+
+#### Scenario: Language switcher renders correctly
+
+- GIVEN the dashboard layout includes `<LanguageSwitcher />`
+- WHEN the header renders
+- THEN the dropdown shows current locale as selected
+- AND the other locale is available as an option
+
+#### Scenario: Switcher works on all dashboard routes
+
+- GIVEN a user on any `/en/dashboard/*` or `/es/dashboard/*` route
+- WHEN the language switcher is used
+- THEN the locale changes and the same route is preserved
+
+---
 
 ### Requirement: Main Content Area Background
 
@@ -11,8 +132,6 @@ The main content area (`<main>`) MUST use warm cream background:
 ```
 
 Where `bg-background` resolves to `--background` = `#FFFAF5` (OKLCH 0.99 0.01 85).
-
-(Previously: `bg-muted/20` which resolved to a light neutral gray)
 
 #### Scenario: Dashboard main area shows warm cream
 
@@ -25,13 +144,11 @@ Where `bg-background` resolves to `--background` = `#FFFAF5` (OKLCH 0.99 0.01 85
 
 ### Requirement: Loading Spinner Colors
 
-The authentication loading spinner MUST use the new primary color:
+The authentication loading spinner MUST use the primary color:
 
 ```tsx
 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 ```
-
-(Previously: `border-primary` with old neutral primary token)
 
 #### Scenario: Loading spinner shows dusty rose
 
@@ -42,31 +159,11 @@ The authentication loading spinner MUST use the new primary color:
 
 ---
 
-### Requirement: Top Bar Header Styling
-
-The top header bar MUST use:
-- Background: `bg-background` (white #FFFFFF for the bar itself)
-- Border bottom: `border-b border-border` (#DBD4CE warm neutral)
-- User avatar dropdown trigger: `text-foreground` (#505050)
-
-(Previously: Used `border-b` with old border token, neutral colors)
-
-#### Scenario: Header bar has warm neutral border
-
-- GIVEN the dashboard layout renders
-- WHEN the top header is visible
-- THEN the bottom border is #DBD4CE (warm neutral)
-- AND user avatar text is #505050
-
----
-
 ### Requirement: Mobile Sheet Sidebar Background
 
 The mobile sheet (`SheetContent`) MUST use:
 - Background: `bg-sidebar` (#FFFFFF)
 - Border: `border-r border-sidebar-border` (#DBD4CE)
-
-(Previously: Inherited from old sidebar tokens)
 
 #### Scenario: Mobile sidebar matches desktop styling
 
@@ -77,8 +174,6 @@ The mobile sheet (`SheetContent`) MUST use:
 - AND navigation items use same active/hover tokens as desktop
 
 ---
-
-## ADDED Requirements
 
 ### Requirement: Gold Accent Decorative Elements
 

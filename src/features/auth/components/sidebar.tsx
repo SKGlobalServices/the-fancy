@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -12,22 +11,24 @@ import {
   Receipt,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 const navItems = [
   {
-    label: "Dashboard",
-    href: "/",
+    labelKey: "sidebar.dashboard",
+    href: "/dashboard",
     icon: LayoutDashboard,
     requiredRole: null as string | null, // all authenticated users
   },
   {
-    label: "Gastos",
+    labelKey: "sidebar.expenses",
     href: "/dashboard/gastos",
     icon: Receipt,
     requiredRole: null as string | null,
   },
   {
-    label: "Users",
+    labelKey: "sidebar.users",
     href: "/admin/users",
     icon: Users,
     requiredRole: "admin" as const,
@@ -37,6 +38,7 @@ const navItems = [
 export function Sidebar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const t = useTranslations();
 
   return (
     <aside className="flex h-full w-64 flex-col border-r bg-background">
@@ -73,7 +75,7 @@ export function Sidebar() {
               )}
             >
               <Icon className="h-4 w-4" />
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           );
         })}
@@ -92,7 +94,7 @@ export function Sidebar() {
           onClick={logout}
         >
           <LogOut className="h-4 w-4" />
-          Sign out
+          {t("common.signOut")}
         </Button>
       </div>
     </aside>
