@@ -1,0 +1,238 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "create": "Create",
+    "update": "Update",
+    "search": "Search",
+    "filter": "Filter",
+    "clearFilters": "Clear filters",
+    "all": "All",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "creating": "Creating...",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {total}",
+    "rowsPerPage": "Rows per page",
+    "signOut": "Sign out",
+    "openMenu": "Open menu",
+    "yes": "Yes",
+    "no": "No",
+    "restore": "Restore"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "expenses": "Expenses",
+    "users": "Users",
+    "categories": "Categories"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in..."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "expenses": "Expenses",
+    "users": "Users",
+    "role": "Role"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to The Fancy Faces administration panel. You deserve a fancy life!",
+    "comingSoon": "Coming soon",
+    "modules": "Modules"
+  },
+  "expenses": {
+    "title": "Expenses",
+    "add": "Add Expense",
+    "showDeleted": "Show deleted",
+    "showingDeleted": "Showing deleted",
+    "hideDeleted": "Hide deleted",
+    "columns": {
+      "date": "Date",
+      "category": "Category",
+      "description": "Description",
+      "provider": "Provider / Place",
+      "paymentMethod": "Payment Method",
+      "amount": "Amount",
+      "receipt": "Receipt",
+      "registeredBy": "Registered By"
+    },
+    "filters": {
+      "search": "Search expenses...",
+      "dateFrom": "From",
+      "dateTo": "To",
+      "category": "Category",
+      "paymentMethod": "Payment Method"
+    },
+    "empty": {
+      "noExpenses": "No expenses recorded",
+      "addFirst": "Start by adding your first expense",
+      "noMatch": "No expenses match the current filters"
+    },
+    "delete": {
+      "title": "Delete expense?",
+      "description": "This will move the expense to the trash. You can restore it later if needed.",
+      "confirm": "Delete"
+    },
+    "form": {
+      "titleNew": "New Expense",
+      "titleEdit": "Edit Expense",
+      "descNew": "Fill in the details for the new expense",
+      "descEdit": "Update the expense details",
+      "date": "Date",
+      "datePlaceholder": "Select a date",
+      "category": "Category",
+      "categoryEmpty": "Create a category first",
+      "categoryPlaceholder": "Select a category",
+      "addCategory": "Add new category",
+      "description": "Description",
+      "descriptionPlaceholder": "Optional - e.g. Professional shampoo",
+      "provider": "Provider / Place",
+      "providerPlaceholder": "e.g. Beauty Supply Co.",
+      "amount": "Amount ($)",
+      "amountPlaceholder": "0.00",
+      "paymentMethod": "Payment Method",
+      "paymentMethodPlaceholder": "Select a method",
+      "hasReceipt": "Has Receipt",
+      "hasReceiptPlaceholder": "Select an option",
+      "receiptNumber": "Receipt #",
+      "receiptNumberPlaceholder": "Optional - INV-001",
+      "registeredBy": "Recorded By",
+      "registeredByPlaceholder": "Who records?",
+      "observations": "Observations",
+      "observationsPlaceholder": "Optional",
+      "submitNew": "Save Expense",
+      "submitEdit": "Update Expense"
+    },
+    "paymentMethods": {
+      "cash": "Cash",
+      "transfer": "Transfer",
+      "card": "Card",
+      "credit": "Credit",
+      "creditNote": "Credit Note",
+      "other": "Other"
+    },
+    "registeredBy": {
+      "anaPaula": "Ana Paula",
+      "leandro": "Leandro",
+      "monica": "Mónica",
+      "lizeth": "Lizeth",
+      "owner": "Owner",
+      "other": "Other"
+    },
+    "hasReceipt": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "toast": {
+      "created": "Expense created",
+      "updated": "Expense updated",
+      "deleted": "Expense deleted",
+      "restored": "Expense restored"
+    },
+    "validation": {
+      "dateRequired": "Date is required",
+      "categoryRequired": "Select a category",
+      "providerRequired": "Provider / Place is required",
+      "amountPositive": "Amount must be greater than 0"
+    }
+  },
+  "categories": {
+    "title": "Manage Categories",
+    "description": "Create, rename, and delete expense categories",
+    "form": {
+      "newLabel": "New Category",
+      "namePlaceholder": "Category name",
+      "submit": "Create Category",
+      "title": "New Category",
+      "desc": "Create a category to organize expenses",
+      "name": "Name",
+      "namePlaceholder": "e.g. Laundry"
+    },
+    "quick": {
+      "title": "New Category",
+      "description": "Create a category to organize expenses",
+      "name": "Name",
+      "namePlaceholder": "e.g. Laundry",
+      "submit": "Create Category"
+    },
+    "empty": {
+      "none": "No categories created",
+      "createFirst": "Create your first category to start organizing expenses"
+    },
+    "delete": {
+      "title": "Delete category?",
+      "description": "The category \"{name}\" will be deleted. It can only be deleted if no expenses use it.",
+      "confirm": "Delete"
+    },
+    "toast": {
+      "created": "Category created",
+      "renamed": "Category renamed",
+      "deleted": "Category deleted"
+    },
+    "error": {
+      "create": "Failed to create category",
+      "rename": "Failed to rename category",
+      "delete": "Failed to delete category"
+    }
+  },
+  "users": {
+    "page": {
+      "title": "Users",
+      "subtitle": "Manage system users"
+    },
+    "form": {
+      "cardTitle": "User Details",
+      "cardDescription": "Enter the details for the new user account.",
+      "email": "Email",
+      "emailPlaceholder": "user@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Minimum 6 characters",
+      "displayName": "Display Name",
+      "displayNamePlaceholder": "Jane Doe",
+      "role": "Role",
+      "rolePlaceholder": "Select a role",
+      "submit": "Create User"
+    },
+    "roles": {
+      "superAdmin": "Super Admin",
+      "admin": "Admin",
+      "user": "User"
+    },
+    "accessDenied": {
+      "title": "Access Denied",
+      "description": "You do not have permission to create users."
+    },
+    "list": {
+      "headers": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "created": "Created"
+      },
+      "empty": "No users found"
+    },
+    "toast": {
+      "created": "User created successfully",
+      "createdDesc": "{displayName} ({email}) has been created as {role}.",
+      "createError": "Failed to create user"
+    },
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "passwordRequired": "Password is required",
+      "passwordMin": "Password must be at least 6 characters",
+      "displayNameRequired": "Display name is required",
+      "rolePermission": "You don't have permission to assign this role"
+    }
+  }
+}
