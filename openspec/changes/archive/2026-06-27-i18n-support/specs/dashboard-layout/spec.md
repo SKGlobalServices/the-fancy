@@ -1,19 +1,14 @@
-# Dashboard Layout Specification
+# Delta for Dashboard Layout
 
 ## Purpose
 
-Defines the dashboard layout structure including the top header bar, language switcher, main content area, mobile sheet sidebar, loading states, and decorative elements.
+Add a language switcher dropdown in the dashboard header (top bar) that allows users to switch between English and Spanish. The switcher must persist the choice via cookie and URL, and must NOT be visible on the login page.
 
 ---
 
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Top Bar Header with Language Switcher
-
-The top header bar MUST use:
-- Background: `bg-background` (white #FFFFFF for the bar itself)
-- Border bottom: `border-b border-border` (#DBD4CE warm neutral)
-- User avatar dropdown trigger: `text-foreground` (#505050)
 
 The top header bar MUST include a language switcher dropdown in the user menu area (next to the user avatar).
 
@@ -26,12 +21,7 @@ The switcher MUST:
 
 The switcher MUST NOT appear on the login page.
 
-#### Scenario: Header bar has warm neutral border
-
-- GIVEN the dashboard layout renders
-- WHEN the top header is visible
-- THEN the bottom border is #DBD4CE (warm neutral)
-- AND user avatar text is #505050
+(Previously: Header had only user avatar dropdown with "Cerrar sesión")
 
 #### Scenario: Language switcher visible in dashboard
 
@@ -74,11 +64,11 @@ The switcher MUST NOT appear on the login page.
 
 ---
 
-### Requirement: User Menu Labels via Translation
+### Requirement: User Menu "Sign out" Label via Translation
 
 The user dropdown menu MUST use translation keys for "Sign out" / "Cerrar sesión" instead of hardcoded text.
 
-The mobile hamburger button MUST use a translation key for its `aria-label`.
+(Previously: Hardcoded "Cerrar sesión" in Spanish)
 
 #### Scenario: Sign out label translates
 
@@ -88,6 +78,14 @@ The mobile hamburger button MUST use a translation key for its `aria-label`.
 - GIVEN locale is `es`
 - WHEN the user menu opens
 - THEN the logout item shows "Cerrar sesión"
+
+---
+
+### Requirement: Mobile Menu Button ARIA Label via Translation
+
+The mobile hamburger button MUST use a translation key for its `aria-label`.
+
+(Previously: Hardcoded `aria-label="Abrir menú"`)
 
 #### Scenario: Mobile menu button label translates
 
@@ -99,6 +97,8 @@ The mobile hamburger button MUST use a translation key for its `aria-label`.
 - THEN `aria-label="Abrir menú"`
 
 ---
+
+## ADDED Requirements
 
 ### Requirement: Language Switcher Component
 
@@ -123,71 +123,45 @@ A new `LanguageSwitcher` Client Component MUST be created at `src/features/i18n/
 
 ---
 
+## REMOVED Requirements
+
+### Requirement: Hardcoded Spanish-Only User Menu
+
+(Reason: Replaced by translation-key-based labels for user menu items)
+(Migration: "Cerrar sesión" → `t('common.signOut')`; "Abrir menú" → `t('common.openMenu')`)
+
+---
+
+## PRESERVED Requirements
+
 ### Requirement: Main Content Area Background
 
 The main content area (`<main>`) MUST use warm cream background:
-
 ```tsx
 <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6">
 ```
-
 Where `bg-background` resolves to `--background` = `#FFFAF5` (OKLCH 0.99 0.01 85).
-
-#### Scenario: Dashboard main area shows warm cream
-
-- GIVEN an authenticated user loads any dashboard route
-- WHEN the main content area renders
-- THEN the background color is #FFFAF5 (warm cream)
-- AND NOT white or gray
-
----
 
 ### Requirement: Loading Spinner Colors
 
 The authentication loading spinner MUST use the primary color:
-
 ```tsx
 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 ```
 
-#### Scenario: Loading spinner shows dusty rose
+### Requirement: Top Bar Header Styling
 
-- GIVEN the auth check is in progress
-- WHEN the loading spinner displays
-- THEN the spinner border color is #714B67 (dusty rose)
-- AND the transparent segment creates the spinning effect
-
----
+The top header bar MUST use:
+- Background: `bg-background` (white `#FFFFFF`)
+- Border bottom: `border-b border-border` (`#DBD4CE` warm neutral)
+- User avatar dropdown trigger: `text-foreground` (`#505050`)
 
 ### Requirement: Mobile Sheet Sidebar Background
 
 The mobile sheet (`SheetContent`) MUST use:
-- Background: `bg-sidebar` (#FFFFFF)
-- Border: `border-r border-sidebar-border` (#DBD4CE)
-
-#### Scenario: Mobile sidebar matches desktop styling
-
-- GIVEN a user opens the mobile menu (viewport < md)
-- WHEN the sheet slides in
-- THEN background is white
-- AND right border is warm neutral
-- AND navigation items use same active/hover tokens as desktop
-
----
+- Background: `bg-sidebar` (`#FFFFFF`)
+- Border: `border-r border-sidebar-border` (`#DBD4CE`)
 
 ### Requirement: Gold Accent Decorative Elements
 
-The dashboard layout MAY use `--gold` (#FFCB30) ONLY for decorative elements:
-- Badge borders
-- Icon accents
-- Horizontal separators (`hr` with `border-gold`)
-- Decorative dividers
-
-Gold MUST NOT be used on interactive elements (buttons, links, inputs, focus rings).
-
-#### Scenario: Gold appears only decoratively
-
-- GIVEN a dashboard page includes a decorative badge
-- WHEN the badge renders with `border-gold` or `text-gold`
-- THEN the gold color (#FFCB30) is visible
-- AND no button, link, or input uses gold for background, text, or border
+The dashboard layout MAY use `--gold` (`#FFCB30`) ONLY for decorative elements (badge borders, icon accents, separators). Gold MUST NOT be used on interactive elements.

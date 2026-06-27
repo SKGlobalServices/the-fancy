@@ -1,43 +1,20 @@
-# App Layout Specification
+# Delta for App Layout
 
 ## Purpose
 
-Defines the root layout structure including font configuration, metadata, locale handling, and route organization.
+Modify the root layout to support dynamic locale-aware `<html lang>`, per-locale metadata, and NextIntlClientProvider wrapping for Client Components. The login page remains at `/login` without locale prefix.
 
 ---
 
-## Requirements
-
-### Requirement: Root Layout Font Configuration
-
-The root layout MUST import Playfair Display and Poppins via `next/font/google` with the following configuration:
-
-- **Playfair Display**: weights [400, 500, 600, 700], subsets ["latin"], variable "--font-heading", display "swap"
-- **Poppins**: weights [300, 400, 500, 600, 700], subsets ["latin"], variable "--font-sans", display "swap"
-- **Geist Mono**: retained, variable "--font-mono", subsets ["latin"], display "swap"
-
-The `<html>` element MUST apply all three font variables: `geistMono.variable`, `playfair.variable`, `poppins.variable`.
-
-#### Scenario: Fonts load without FOUT
-
-- GIVEN the root layout loads
-- WHEN the browser fetches Google Fonts
-- THEN `display: swap` ensures fallback fonts show immediately
-- AND no layout shift occurs when web fonts load
-
-#### Scenario: CSS variables available globally
-
-- GIVEN the `<html>` element has all three font variables
-- WHEN any component uses `font-heading`, `font-sans`, or `font-mono`
-- THEN the correct font family renders via Tailwind's `@theme inline` mapping
-
----
+## MODIFIED Requirements
 
 ### Requirement: Root Layout Dynamic HTML Lang
 
 The `<html>` element MUST set `lang` attribute dynamically from the route's `locale` parameter instead of hardcoded `"es"`.
 
 The root layout MUST accept `params: Promise<{ locale: string }>` and await it to get the current locale.
+
+(Previously: `<html lang="es" ...>` was static)
 
 #### Scenario: English locale sets lang="en"
 
@@ -61,7 +38,7 @@ The root layout MUST accept `params: Promise<{ locale: string }>` and await it t
 
 ---
 
-### Requirement: Per-Locale Metadata
+### Requirement: Per-Locale Metadata Title and Description
 
 The root layout MUST export a `generateMetadata` function that returns locale-specific `title` and `description`.
 
@@ -71,6 +48,8 @@ The root layout MUST export a `generateMetadata` function that returns locale-sp
 | `es` | "The Fancy Faces" | "The Fancy Faces Beauty Studio — Aruba. ¡Te mereces una vida fancy!" |
 
 Brand name "The Fancy Faces" MUST remain identical in both locales.
+
+(Previously: Static metadata with English title and English description)
 
 #### Scenario: English metadata for /en/ routes
 
@@ -85,18 +64,6 @@ Brand name "The Fancy Faces" MUST remain identical in both locales.
 - WHEN metadata is generated
 - THEN `title` is "The Fancy Faces"
 - AND `description` contains "¡Te mereces una vida fancy!"
-
-#### Scenario: Browser tab shows brand title
-
-- GIVEN a user opens the admin app
-- WHEN the page loads
-- THEN the browser tab displays "The Fancy Faces"
-
-#### Scenario: SEO description reflects brand positioning
-
-- GIVEN a search engine crawls the page
-- WHEN reading metadata
-- THEN description contains "The Fancy Faces Beauty Studio — Aruba" and the tagline
 
 ---
 
@@ -123,6 +90,23 @@ This applies ONLY to routes under `/[locale]/...`. The login page (`/login`) MUS
 - AND the login form remains 100% English with no i18n overhead
 
 ---
+
+### Requirement: Font Configuration Preserved
+
+The root layout MUST continue importing Playfair Display, Poppins, and Geist Mono via `next/font/google` with the same configuration as before.
+
+(Previously: Same font config — no change)
+
+#### Scenario: Fonts load without FOUT (unchanged)
+
+- GIVEN the root layout loads
+- WHEN the browser fetches Google Fonts
+- THEN `display: swap` ensures fallback fonts show immediately
+- AND no layout shift occurs when web fonts load
+
+---
+
+## ADDED Requirements
 
 ### Requirement: Locale Segment in Route Groups
 
