@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminAuth, getAdminDb } from "@/shared/lib/firebase-admin";
+import { getAdminAuth } from "@/shared/lib/firebase-admin-auth";
+import { getAdminDb } from "@/shared/lib/firebase-admin";
 import { verifyFirebaseToken } from "@/lib/verify-firebase-token";
 import type { Role } from "@/features/auth/types";
 import { canCreateRole } from "@/features/auth/types";

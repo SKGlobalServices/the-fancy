@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/shared/lib/firebase-admin";
+import { getAdminAuth } from "@/shared/lib/firebase-admin-auth";
+import { getAdminDb } from "@/shared/lib/firebase-admin";
 
 /**
  * Bootstrap: set the first super-admin user.
