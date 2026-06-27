@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Timestamp } from "firebase/firestore";
 
@@ -27,6 +27,7 @@ vi.mock("@/shared/lib/firebase", () => ({
 }));
 
 import { ExpenseForm } from "../expense-form";
+import { renderWithI18n } from "@/test-utils/render-with-i18n";
 
 // ── Helpers ──────────────────────────────────────────────────
 
@@ -66,23 +67,23 @@ describe("ExpenseForm", () => {
 
   it("renders create form with all fields", () => {
     setupMocks();
-    render(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
+    renderWithI18n(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
 
-    expect(screen.getByText("Nuevo gasto")).toBeDefined();
-    expect(screen.getByText(/proveedor/i)).toBeDefined();
-    expect(screen.getByText(/monto/i)).toBeDefined();
-    expect(screen.getByText(/método de pago/i)).toBeDefined();
+    expect(screen.getByText("New Expense")).toBeDefined();
+    expect(screen.getByText(/Provider/i)).toBeDefined();
+    expect(screen.getByText(/Amount/i)).toBeDefined();
+    expect(screen.getByText(/Payment Method/i)).toBeDefined();
   });
 
   it("shows validation errors on empty submit", async () => {
     setupMocks({ categories: [{ id: "cat1", name: "Insumos" }] });
-    render(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
+    renderWithI18n(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
 
-    const submitBtn = screen.getByRole("button", { name: /guardar gasto/i });
+    const submitBtn = screen.getByRole("button", { name: /save expense/i });
     await userEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(screen.getByText(/el proveedor/i)).toBeDefined();
+      expect(screen.getByText(/Provider/i)).toBeDefined();
     });
   });
 
@@ -90,25 +91,21 @@ describe("ExpenseForm", () => {
     const addExpense = vi.fn().mockResolvedValue("new-id");
     setupMocks({ addExpense });
 
-    render(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
+    renderWithI18n(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
 
-    // Fill in required text fields
-    await userEvent.type(screen.getByLabelText(/proveedor/i), "Distribuidora XYZ");
-    await userEvent.type(screen.getByLabelText(/monto/i), "5000");
+    await userEvent.type(screen.getByLabelText(/provider/i), "Distribuidora XYZ");
+    await userEvent.type(screen.getByLabelText(/amount/i), "5000");
 
-    // Verify the form has all required inputs present
-    expect(screen.getByLabelText(/proveedor/i)).toHaveValue("Distribuidora XYZ");
-    expect(screen.getByLabelText(/monto/i)).toHaveValue(5000);
-    // The categoria select exists (even if we can't interact with it in jsdom)
-    expect(screen.getByLabelText(/categoría/i)).toBeDefined();
+    expect(screen.getByLabelText(/provider/i)).toHaveValue("Distribuidora XYZ");
+    expect(screen.getByLabelText(/amount/i)).toHaveValue(5000);
+    expect(screen.getByLabelText(/category/i)).toBeDefined();
   });
 
   it("shows disabled message when no categories exist", () => {
     setupMocks({ categories: [] });
-    render(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
+    renderWithI18n(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
 
-    // The text appears in the select trigger placeholder
-    const elements = screen.getAllByText(/primero crea una categoría/i);
+    const elements = screen.getAllByText(/create a category first/i);
     expect(elements.length).toBeGreaterThan(0);
   });
 
@@ -118,10 +115,9 @@ describe("ExpenseForm", () => {
       .mockRejectedValue(new Error("Error de conexión"));
     setupMocks({ addExpense });
 
-    render(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
+    renderWithI18n(<ExpenseForm open={true} onOpenChange={vi.fn()} />);
 
-    // Verify submit button exists and form renders without crash
-    expect(screen.getByRole("button", { name: /guardar gasto/i })).toBeDefined();
+    expect(screen.getByRole("button", { name: /save expense/i })).toBeDefined();
   });
 
   it("pre-fills fields in edit mode", () => {
@@ -132,11 +128,11 @@ describe("ExpenseForm", () => {
       categoria: "Insumos",
       descripcion: "Compra existente",
       proveedorLugar: "Distribuidora ABC",
-      metodoPago: "Efectivo" as const,
+      metodoPago: "cash" as const,
       monto: 3000,
-      tieneRecibo: "Sí" as const,
+      tieneRecibo: "yes" as const,
       numeroReciboFoto: "",
-      registradoPor: "Leandro" as const,
+      registradoPor: "leandro" as const,
       observaciones: "",
       createdBy: "user-1",
       createdAt: new Timestamp(1700000000, 0),
@@ -144,7 +140,7 @@ describe("ExpenseForm", () => {
       deletedAt: null,
     };
 
-    render(
+    renderWithI18n(
       <ExpenseForm
         open={true}
         onOpenChange={vi.fn()}
@@ -166,11 +162,11 @@ describe("ExpenseForm", () => {
       categoria: "Insumos",
       descripcion: "Compra existente",
       proveedorLugar: "Distribuidora ABC",
-      metodoPago: "Efectivo" as const,
+      metodoPago: "cash" as const,
       monto: 3000,
-      tieneRecibo: "Sí" as const,
+      tieneRecibo: "yes" as const,
       numeroReciboFoto: "",
-      registradoPor: "Leandro" as const,
+      registradoPor: "leandro" as const,
       observaciones: "",
       createdBy: "user-1",
       createdAt: new Timestamp(1700000000, 0),
@@ -178,7 +174,7 @@ describe("ExpenseForm", () => {
       deletedAt: null,
     };
 
-    render(
+    renderWithI18n(
       <ExpenseForm
         open={true}
         onOpenChange={vi.fn()}
@@ -186,7 +182,7 @@ describe("ExpenseForm", () => {
       />,
     );
 
-    const submitBtn = screen.getByRole("button", { name: /guardar gasto/i });
+    const submitBtn = screen.getByRole("button", { name: /update expense/i });
     await userEvent.click(submitBtn);
 
     await waitFor(() => {
