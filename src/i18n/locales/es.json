@@ -53,6 +53,7 @@
   },
   "expenses": {
     "title": "Gastos",
+    "description": "Administrá tus gastos",
     "add": "Nuevo gasto",
     "showDeleted": "Mostrar eliminados",
     "showingDeleted": "Mostrando eliminados",

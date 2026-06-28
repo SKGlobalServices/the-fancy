@@ -53,6 +53,7 @@
   },
   "expenses": {
     "title": "Expenses",
+    "description": "Manage your expenses",
     "add": "Add Expense",
     "showDeleted": "Show deleted",
     "showingDeleted": "Showing deleted",
