@@ -191,3 +191,21 @@ Gold MUST NOT be used on interactive elements (buttons, links, inputs, focus rin
 - WHEN the badge renders with `border-gold` or `text-gold`
 - THEN the gold color (#FFCB30) is visible
 - AND no button, link, or input uses gold for background, text, or border
+
+---
+
+### Requirement: Sales Route Protection
+
+The `/dashboard/ventas/*` routes MUST be protected by the same auth guard as other dashboard routes. Unauthenticated users MUST be redirected to `/login`.
+
+#### Scenario: Authenticated user accesses sales
+
+- GIVEN an authenticated user
+- WHEN navigating to `/dashboard/ventas`
+- THEN the sales page renders normally
+
+#### Scenario: Unauthenticated user redirected
+
+- GIVEN an unauthenticated user
+- WHEN navigating to `/dashboard/ventas`
+- THEN the user is redirected to `/login`
