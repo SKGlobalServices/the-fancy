@@ -9,6 +9,7 @@ import {
   Users,
   LogOut,
   Receipt,
+  ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -25,6 +26,12 @@ const navItems = [
     labelKey: "sidebar.expenses",
     href: "/dashboard/gastos",
     icon: Receipt,
+    requiredRole: null as string | null,
+  },
+  {
+    labelKey: "sidebar.sales",
+    href: "/dashboard/ventas",
+    icon: ShoppingCart,
     requiredRole: null as string | null,
   },
   {
