@@ -8,3 +8,6 @@ allowBuilds:
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
+
+overrides:
+  jose: ^5.10.0
