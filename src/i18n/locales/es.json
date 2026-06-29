@@ -403,7 +403,7 @@
       "submit": "Crear usuario"
     },
     "roles": {
-      "superAdmin": "Super Admin",
+      "super-admin": "Super Admin",
       "admin": "Admin",
       "user": "Usuario"
     },
@@ -420,10 +420,18 @@
       },
       "empty": "No hay usuarios"
     },
+    "edit": {
+      "title": "Editar usuario",
+      "description": "Actualizá los datos del usuario.",
+      "submit": "Guardar cambios",
+      "emailLabel": "Correo electrónico"
+    },
     "toast": {
       "created": "Usuario creado exitosamente",
       "createdDesc": "{displayName} ({email}) fue creado como {role}.",
-      "createError": "Error al crear usuario"
+      "createError": "Error al crear usuario",
+      "updated": "Usuario actualizado exitosamente",
+      "updateError": "Error al actualizar usuario"
     },
     "validation": {
       "emailRequired": "El correo es obligatorio",

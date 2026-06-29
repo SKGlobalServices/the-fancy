@@ -403,7 +403,7 @@
       "submit": "Create User"
     },
     "roles": {
-      "superAdmin": "Super Admin",
+      "super-admin": "Super Admin",
       "admin": "Admin",
       "user": "User"
     },
@@ -420,10 +420,18 @@
       },
       "empty": "No users found"
     },
+    "edit": {
+      "title": "Edit User",
+      "description": "Update the user details.",
+      "submit": "Save Changes",
+      "emailLabel": "Email"
+    },
     "toast": {
       "created": "User created successfully",
       "createdDesc": "{displayName} ({email}) has been created as {role}.",
-      "createError": "Failed to create user"
+      "createError": "Failed to create user",
+      "updated": "User updated successfully",
+      "updateError": "Failed to update user"
     },
     "validation": {
       "emailRequired": "Email is required",
