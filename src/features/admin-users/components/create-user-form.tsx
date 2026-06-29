@@ -10,13 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -47,6 +40,11 @@ interface FormErrors {
   general?: string;
 }
 
+interface CreateUserFormProps {
+  onSuccess: () => void;
+  onCancel?: () => void;
+}
+
 const initialForm: FormData = {
   email: "",
   password: "",
@@ -54,7 +52,7 @@ const initialForm: FormData = {
   role: "user",
 };
 
-export function CreateUserForm() {
+export function CreateUserForm({ onSuccess, onCancel }: CreateUserFormProps) {
   const { user } = useAuth();
   const t = useTranslations("users");
   const common = useTranslations("common");
@@ -139,6 +137,7 @@ export function CreateUserForm() {
         }),
       });
       resetForm();
+      onSuccess();
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "An unexpected error occurred";
@@ -154,174 +153,160 @@ export function CreateUserForm() {
   // Guard: user without permission should not see the form
   if (availableRoles.length === 0) {
     return (
-      <Card className="border-destructive/50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-destructive">
-            <AlertCircle className="h-5 w-5" />
-            {t("accessDenied.title")}
-          </CardTitle>
-          <CardDescription>
-            {t("accessDenied.description")}
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <div className="flex items-center gap-2 text-destructive">
+        <AlertCircle className="h-5 w-5 shrink-0" />
+        <p className="text-sm">{t("accessDenied.description")}</p>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t("form.cardTitle")}</h1>
-        <p className="mt-1 text-muted-foreground">
-          {t("form.cardDescription")}
-        </p>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Success message */}
+      {success && (
+        <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 p-4">
+          <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+            <CheckCircle2 className="h-5 w-5" />
+            <span className="font-medium">{t("toast.created")}</span>
+          </div>
+          <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-500">
+            {success.displayName} ({success.email}) — {ROLE_LABELS[success.role]}
+          </p>
+        </div>
+      )}
+
+      {/* General error */}
+      {errors.general && (
+        <div
+          role="alert"
+          className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive"
+        >
+          {errors.general}
+        </div>
+      )}
+
+      {/* Email */}
+      <div className="space-y-2">
+        <Label htmlFor="email" className="text-sm font-medium">
+          {t("form.email")} *
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder={t("form.emailPlaceholder")}
+          value={form.email}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, email: e.target.value }))
+          }
+          disabled={isSubmitting}
+          className="h-11"
+          autoComplete="off"
+        />
+        {errors.email && (
+          <p className="text-xs text-destructive">{errors.email}</p>
+        )}
       </div>
 
-      <Card className="max-w-lg">
-        <CardHeader>
-          <CardTitle>{t("form.cardTitle")}</CardTitle>
-          <CardDescription>
-            {t("form.cardDescription")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Success message */}
-            {success && (
-              <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 p-4">
-                <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
-                  <CheckCircle2 className="h-5 w-5" />
-                  <span className="font-medium">{t("toast.created")}</span>
-                </div>
-                <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-500">
-                  {success.displayName} ({success.email}) — {ROLE_LABELS[success.role]}
-                </p>
-              </div>
-            )}
+      {/* Password */}
+      <div className="space-y-2">
+        <Label htmlFor="password" className="text-sm font-medium">
+          {t("form.password")} *
+        </Label>
+        <Input
+          id="password"
+          type="password"
+          placeholder={t("form.passwordPlaceholder")}
+          value={form.password}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, password: e.target.value }))
+          }
+          disabled={isSubmitting}
+          className="h-11"
+          autoComplete="new-password"
+        />
+        {errors.password && (
+          <p className="text-xs text-destructive">{errors.password}</p>
+        )}
+      </div>
 
-            {/* General error */}
-            {errors.general && (
-              <div
-                role="alert"
-                className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive"
-              >
-                {errors.general}
-              </div>
-            )}
+      {/* Display Name */}
+      <div className="space-y-2">
+        <Label htmlFor="displayName" className="text-sm font-medium">
+          {t("form.displayName")} *
+        </Label>
+        <Input
+          id="displayName"
+          type="text"
+          placeholder={t("form.displayNamePlaceholder")}
+          value={form.displayName}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, displayName: e.target.value }))
+          }
+          disabled={isSubmitting}
+          className="h-11"
+        />
+        {errors.displayName && (
+          <p className="text-xs text-destructive">
+            {errors.displayName}
+          </p>
+        )}
+      </div>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
-                {t("form.email")} *
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={t("form.emailPlaceholder")}
-                value={form.email}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, email: e.target.value }))
-                }
-                disabled={isSubmitting}
-                className="h-11"
-                autoComplete="off"
-              />
-              {errors.email && (
-                <p className="text-xs text-destructive">{errors.email}</p>
-              )}
-            </div>
+      {/* Role */}
+      <div className="space-y-2">
+        <Label htmlFor="role" className="text-sm font-medium">
+          {t("form.role")} *
+        </Label>
+        <Select
+          value={form.role}
+          onValueChange={(value) =>
+            setForm((prev) => ({ ...prev, role: value as Role }))
+          }
+          disabled={isSubmitting || availableRoles.length <= 1}
+        >
+          <SelectTrigger className="h-11">
+            <SelectValue placeholder={t("form.rolePlaceholder")} />
+          </SelectTrigger>
+          <SelectContent>
+            {availableRoles.map((role) => (
+              <SelectItem key={role} value={role}>
+                {t(`roles.${role}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.role && (
+          <p className="text-xs text-destructive">{errors.role}</p>
+        )}
+      </div>
 
-            {/* Password */}
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
-                {t("form.password")} *
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder={t("form.passwordPlaceholder")}
-                value={form.password}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, password: e.target.value }))
-                }
-                disabled={isSubmitting}
-                className="h-11"
-                autoComplete="new-password"
-              />
-              {errors.password && (
-                <p className="text-xs text-destructive">{errors.password}</p>
-              )}
-            </div>
-
-            {/* Display Name */}
-            <div className="space-y-2">
-              <Label htmlFor="displayName" className="text-sm font-medium">
-                {t("form.displayName")} *
-              </Label>
-              <Input
-                id="displayName"
-                type="text"
-                placeholder={t("form.displayNamePlaceholder")}
-                value={form.displayName}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, displayName: e.target.value }))
-                }
-                disabled={isSubmitting}
-                className="h-11"
-              />
-              {errors.displayName && (
-                <p className="text-xs text-destructive">
-                  {errors.displayName}
-                </p>
-              )}
-            </div>
-
-            {/* Role */}
-            <div className="space-y-2">
-              <Label htmlFor="role" className="text-sm font-medium">
-                {t("form.role")} *
-              </Label>
-              <Select
-                value={form.role}
-                onValueChange={(value) =>
-                  setForm((prev) => ({ ...prev, role: value as Role }))
-                }
-                disabled={isSubmitting || availableRoles.length <= 1}
-              >
-                <SelectTrigger className="h-11">
-                  <SelectValue placeholder={t("form.rolePlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableRoles.map((role) => (
-                    <SelectItem key={role} value={role}>
-                      {t(`roles.${role}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.role && (
-                <p className="text-xs text-destructive">{errors.role}</p>
-              )}
-            </div>
-
-            {/* Submit */}
-            <Button
-              type="submit"
-              className="h-11 w-full text-base font-medium"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {common("creating")}
-                </>
-              ) : (
-                t("form.submit")
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+      {/* Submit + Cancel */}
+      <div className="flex items-center justify-end gap-3 pt-2">
+        {onCancel && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            {common("cancel")}
+          </Button>
+        )}
+        <Button
+          type="submit"
+          className="h-11 min-w-[140px] text-base font-medium"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {common("creating")}
+            </>
+          ) : (
+            t("form.submit")
+          )}
+        </Button>
+      </div>
+    </form>
   );
 }

@@ -43,6 +43,7 @@ All navigation item labels MUST use translation keys via `useTranslations('sideb
 |-------|-----------------|
 | `/` | `sidebar.dashboard` |
 | `/dashboard/gastos` | `sidebar.expenses` |
+| `/dashboard/ventas` | `sidebar.sales` |
 | `/admin/users` | `sidebar.users` |
 
 The `navItems` array MUST be transformed to use `t('sidebar.dashboard')`, etc., instead of hardcoded strings.
@@ -66,6 +67,7 @@ A new translation namespace `sidebar` MUST exist in both `en.json` and `es.json`
 {
   "dashboard": "Dashboard",
   "expenses": "Expenses",
+  "sales": "Ventas",
   "users": "Users",
   "role": "Role"
 }
@@ -170,3 +172,26 @@ The **Users** link (`/admin/users`) MUST be hidden for `user` role users. It MUS
 - GIVEN a user with role `admin` or `super-admin`
 - WHEN viewing the dashboard layout
 - THEN the **Users** link is rendered
+
+---
+
+### Requirement: Sales Navigation Link
+
+The sidebar MUST include a "Ventas" nav item linking to `/dashboard/ventas` with the `sidebar.sales` translation key. It MUST respect role-based visibility — visible for all authenticated roles (user, admin, super-admin).
+
+| Route | Translation Key |
+|-------|-----------------|
+| `/dashboard/ventas` | `sidebar.sales` |
+
+#### Scenario: Sales link visible for all roles
+
+- GIVEN any authenticated user (user, admin, or super-admin)
+- WHEN the sidebar renders
+- THEN a "Ventas" nav item links to `/dashboard/ventas`
+- AND the label translates via `t('sidebar.sales')`
+
+#### Scenario: Active state for sales route
+
+- GIVEN a user is on `/dashboard/ventas`
+- WHEN the sidebar renders
+- THEN the Ventas link shows active styling (`bg-primary/10 text-primary`)
