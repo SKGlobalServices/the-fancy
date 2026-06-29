@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -8,26 +8,34 @@ import {
   LayoutDashboard,
   Users,
   LogOut,
-  Scissors,
   Receipt,
+  ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 const navItems = [
   {
-    label: "Dashboard",
-    href: "/",
+    labelKey: "sidebar.dashboard",
+    href: "/dashboard",
     icon: LayoutDashboard,
     requiredRole: null as string | null, // all authenticated users
   },
   {
-    label: "Gastos",
+    labelKey: "sidebar.expenses",
     href: "/dashboard/gastos",
     icon: Receipt,
     requiredRole: null as string | null,
   },
   {
-    label: "Users",
+    labelKey: "sidebar.sales",
+    href: "/dashboard/ventas",
+    icon: ShoppingCart,
+    requiredRole: null as string | null,
+  },
+  {
+    labelKey: "sidebar.users",
     href: "/admin/users",
     icon: Users,
     requiredRole: "admin" as const,
@@ -37,13 +45,14 @@ const navItems = [
 export function Sidebar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const t = useTranslations();
 
   return (
     <aside className="flex h-full w-64 flex-col border-r bg-background">
       {/* Brand */}
       <div className="flex h-16 items-center gap-2 border-b px-6">
-        <Scissors className="h-5 w-5 text-primary" />
-        <span className="text-lg font-semibold tracking-tight">The Fancy</span>
+        <Image src="/logo_navbar.webp" alt="The Fancy Faces" width={32} height={32} priority unoptimized className="rounded-full" />
+        <span className="text-lg font-semibold tracking-tight">The Fancy Faces</span>
       </div>
 
       {/* Navigation */}
@@ -73,7 +82,7 @@ export function Sidebar() {
               )}
             >
               <Icon className="h-4 w-4" />
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           );
         })}
@@ -92,7 +101,7 @@ export function Sidebar() {
           onClick={logout}
         >
           <LogOut className="h-4 w-4" />
-          Sign out
+          {t("common.signOut")}
         </Button>
       </div>
     </aside>

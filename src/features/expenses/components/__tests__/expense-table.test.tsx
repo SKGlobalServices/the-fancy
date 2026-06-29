@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Timestamp } from "firebase/firestore";
 import type { Expense } from "../../types";
@@ -28,6 +28,7 @@ vi.mock("@/features/auth/hooks/use-auth", () => ({
 }));
 
 import { ExpenseTable } from "../expense-table";
+import { renderWithI18n } from "@/test-utils/render-with-i18n";
 
 // ── Helpers ──────────────────────────────────────────────────
 
@@ -38,11 +39,11 @@ function makeExpense(overrides: Partial<Expense> = {}): Expense {
     categoria: "Insumos",
     descripcion: "Shampoo profesional",
     proveedorLugar: "Distribuidora Belleza",
-    metodoPago: "Transferencia",
+    metodoPago: "transfer",
     monto: 15000.5,
-    tieneRecibo: "Sí",
+    tieneRecibo: "yes",
     numeroReciboFoto: "",
-    registradoPor: "Ana Paula",
+    registradoPor: "anaPaula",
     observaciones: "",
     createdBy: "user-1",
     createdAt: new Timestamp(1700000000, 0),
@@ -58,7 +59,7 @@ function makeExpenses(count: number): Expense[] {
       id: `exp-${i}`,
       categoria: i % 2 === 0 ? "Insumos" : "Servicios",
       monto: 1000 * (i + 1),
-      metodoPago: i % 3 === 0 ? "Efectivo" : "Transferencia",
+      metodoPago: i % 3 === 0 ? "cash" : "transfer",
       descripcion: `Gasto número ${i + 1}`,
     }),
   );
@@ -93,7 +94,7 @@ function renderTable(
     removeCategory: vi.fn(),
   });
 
-  return render(<ExpenseTable />);
+  return renderWithI18n(<ExpenseTable />);
 }
 
 describe("ExpenseTable", () => {
@@ -123,7 +124,7 @@ describe("ExpenseTable", () => {
   it("shows empty state when no expenses", () => {
     renderTable([], false);
 
-    expect(screen.getByText("No hay gastos registrados")).toBeDefined();
+    expect(screen.getByText("No expenses recorded")).toBeDefined();
   });
 
   it("filters by global search term", async () => {
@@ -143,7 +144,7 @@ describe("ExpenseTable", () => {
     ];
     renderTable(expenses);
 
-    const searchInput = screen.getByPlaceholderText(/buscar gastos/i);
+    const searchInput = screen.getByPlaceholderText(/search/i);
     await userEvent.type(searchInput, "Compra de");
 
     expect(screen.getByText("Compra de insumos")).toBeDefined();
@@ -166,11 +167,8 @@ describe("ExpenseTable", () => {
     expect(screen.getByText("Servicio B")).toBeDefined();
 
     // The category filter dropdown exists and can be clicked
-    const categorySelect = screen.getByLabelText(/categoría/i);
+    const categorySelect = screen.getByLabelText(/category/i);
     expect(categorySelect).toBeDefined();
-
-    // Set category filter value programmatically to test filtering
-    // (Radix Select portal rendering is inconsistent in jsdom)
   });
 
   it("sorts by monto column", async () => {
@@ -180,9 +178,8 @@ describe("ExpenseTable", () => {
     ];
     renderTable(expenses);
 
-    // Click monto header to sort (it's a clickable button in the table header)
-    // Table headers are rendered as buttons for sortable columns
-    const montoHeader = screen.getByRole("button", { name: /monto/i });
+    // Click monto header to sort
+    const montoHeader = screen.getByRole("button", { name: /amount/i });
     await userEvent.click(montoHeader);
     // Sorting toggles — doesn't throw
   });
@@ -200,22 +197,19 @@ describe("ExpenseTable", () => {
     const expenses = makeExpenses(2);
     renderTable(expenses);
 
-    // Each row should have a dropdown menu trigger
-    // Find buttons that are ghost variant in the actions column
     const buttons = screen.getAllByRole("button");
-    // There should be at least the filter selects, search button, and action buttons
-    expect(buttons.length).toBeGreaterThan(4); // Search, date, category, payment, + actions
+    expect(buttons.length).toBeGreaterThan(4);
   });
 
   it("shows empty filters message when search yields no results", async () => {
     const expenses = makeExpenses(3);
     renderTable(expenses);
 
-    const searchInput = screen.getByPlaceholderText(/buscar gastos/i);
+    const searchInput = screen.getByPlaceholderText(/search/i);
     await userEvent.type(searchInput, "ZZZZnotfoundZZZZ");
 
     expect(
-      screen.getByText("No se encontraron gastos con los filtros actuales"),
+      screen.getByText("No expenses match the current filters"),
     ).toBeDefined();
   });
 
@@ -223,7 +217,7 @@ describe("ExpenseTable", () => {
     it("renders the toggle button", () => {
       renderTable([]);
       expect(
-        screen.getByRole("button", { name: /mostrar eliminados/i }),
+        screen.getByRole("button", { name: /show deleted/i }),
       ).toBeDefined();
     });
 
@@ -241,18 +235,17 @@ describe("ExpenseTable", () => {
         setShowDeleted,
       });
 
-      render(<ExpenseTable />);
+      renderWithI18n(<ExpenseTable />);
 
       const toggleButton = screen.getByRole("button", {
-        name: /mostrar eliminados/i,
+        name: /show deleted/i,
       });
       await userEvent.click(toggleButton);
 
       expect(setShowDeleted).toHaveBeenCalledWith(true);
     });
 
-    it("shows restore button when showDeleted is true", () => {
-      // Render with showDeleted=true and a deleted expense
+    it("shows showing deleted text when showDeleted is true", () => {
       const deletedExpenses = [
         makeExpense({
           id: "del-1",
@@ -261,15 +254,14 @@ describe("ExpenseTable", () => {
       ];
       renderTable(deletedExpenses, false, true);
 
-      // Should show "Mostrando eliminados" text on the toggle
       expect(
-        screen.getByRole("button", { name: /mostrando eliminados/i }),
+        screen.getByRole("button", { name: /showing deleted/i }),
       ).toBeDefined();
     });
   });
 
   describe("restore action", () => {
-    it("shows Restaurar action in dropdown when showDeleted is true", () => {
+    it("shows Restore action in dropdown when showDeleted is true", () => {
       const restoreExpense = vi.fn();
       const deletedExpenses = [
         makeExpense({
@@ -290,16 +282,12 @@ describe("ExpenseTable", () => {
         setShowDeleted: vi.fn(),
       });
 
-      render(<ExpenseTable />);
+      renderWithI18n(<ExpenseTable />);
 
-      // The table should render with the deleted expense visible
-      // Each row has a dropdown trigger button (ghost variant)
       const triggerButtons = screen.getAllByRole("button");
-      // At minimum the toggle and action buttons exist
       expect(triggerButtons.length).toBeGreaterThan(0);
-      // The toggle shows "Mostrando eliminados"
       expect(
-        screen.getByRole("button", { name: /mostrando eliminados/i }),
+        screen.getByRole("button", { name: /showing deleted/i }),
       ).toBeDefined();
     });
   });

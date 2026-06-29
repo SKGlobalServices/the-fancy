@@ -1,0 +1,471 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "create": "Crear",
+    "update": "Actualizar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "clearFilters": "Limpiar filtros",
+    "all": "Todas",
+    "loading": "Cargando...",
+    "saving": "Guardando...",
+    "creating": "Creando...",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "pageOf": "Página {page} de {total}",
+    "rowsPerPage": "Filas por página",
+    "signOut": "Cerrar sesión",
+    "openMenu": "Abrir menú",
+    "yes": "Sí",
+    "no": "No",
+    "restore": "Restaurar",
+    "inactive": "Inactivo"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "expenses": "Gastos",
+    "users": "Usuarios",
+    "categories": "Categorías"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signingIn": "Ingresando..."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "expenses": "Gastos",
+    "sales": "Ventas",
+    "users": "Usuarios",
+    "role": "Rol"
+  },
+  "dashboard": {
+    "title": "Panel de control",
+    "welcome": "Bienvenido al panel de administración de The Fancy Faces. ¡Te mereces una vida fancy!",
+    "comingSoon": "Próximamente",
+    "modules": "Módulos"
+  },
+  "expenses": {
+    "title": "Gastos",
+    "description": "Administrá tus gastos",
+    "add": "Nuevo gasto",
+    "showDeleted": "Mostrar eliminados",
+    "showingDeleted": "Mostrando eliminados",
+    "hideDeleted": "Ocultar eliminados",
+    "columns": {
+      "date": "Fecha",
+      "category": "Categoría",
+      "description": "Descripción",
+      "provider": "Proveedor / Lugar",
+      "paymentMethod": "Método de pago",
+      "amount": "Monto",
+      "receipt": "Recibo",
+      "registeredBy": "Registrado por"
+    },
+    "filters": {
+      "search": "Buscar gastos...",
+      "dateFrom": "Desde",
+      "dateTo": "Hasta",
+      "category": "Categoría",
+      "paymentMethod": "Método de pago"
+    },
+    "empty": {
+      "noExpenses": "No hay gastos registrados",
+      "addFirst": "Comenzá agregando tu primer gasto",
+      "noMatch": "No se encontraron gastos con los filtros actuales"
+    },
+    "delete": {
+      "title": "¿Eliminar gasto?",
+      "description": "Esta acción moverá el gasto a la papelera. Podés restaurarlo después si es necesario.",
+      "confirm": "Eliminar"
+    },
+    "form": {
+      "titleNew": "Nuevo gasto",
+      "titleEdit": "Editar gasto",
+      "descNew": "Completá los datos del nuevo gasto",
+      "descEdit": "Actualizá los datos del gasto",
+      "date": "Fecha",
+      "datePlaceholder": "Seleccioná una fecha",
+      "category": "Categoría",
+      "categoryEmpty": "Primero crea una categoría",
+      "categoryPlaceholder": "Seleccioná una categoría",
+      "addCategory": "Agregar nueva",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Opcional - ej. Shampoo profesional",
+      "provider": "Proveedor / Lugar",
+      "providerPlaceholder": "Ej. Distribuidora Belleza S.A.",
+      "amount": "Monto ($)",
+      "amountPlaceholder": "0.00",
+      "paymentMethod": "Método de pago",
+      "paymentMethodPlaceholder": "Seleccioná un método",
+      "hasReceipt": "Tiene recibo",
+      "hasReceiptPlaceholder": "Seleccioná una opción",
+      "receiptNumber": "N° de recibo",
+      "receiptNumberPlaceholder": "Opcional - FAC-001",
+      "registeredBy": "Registrado por",
+      "registeredByPlaceholder": "¿Quién registra?",
+      "observations": "Observaciones",
+      "observationsPlaceholder": "Opcional",
+      "submitNew": "Guardar gasto",
+      "submitEdit": "Actualizar gasto"
+    },
+    "paymentMethods": {
+      "cash": "Efectivo",
+      "transfer": "Transferencia",
+      "card": "Tarjeta",
+      "credit": "Crédito",
+      "creditNote": "Abono",
+      "other": "Otro"
+    },
+    "registeredBy": {
+      "anaPaula": "Ana Paula",
+      "leandro": "Leandro",
+      "monica": "Mónica",
+      "lizeth": "Lizeth",
+      "owner": "Dueña",
+      "other": "Otro"
+    },
+    "hasReceipt": {
+      "yes": "Sí",
+      "no": "No"
+    },
+    "toast": {
+      "created": "Gasto creado",
+      "updated": "Gasto actualizado",
+      "deleted": "Gasto eliminado",
+      "restored": "Gasto restaurado"
+    },
+    "validation": {
+      "dateRequired": "La fecha es obligatoria",
+      "categoryRequired": "Seleccioná una categoría",
+      "providerRequired": "El proveedor/lugar es obligatorio",
+      "amountPositive": "El monto debe ser mayor a 0"
+    }
+  },
+  "sales": {
+    "title": "Ventas",
+    "description": "Administrá las ventas diarias",
+    "add": "Nueva venta",
+    "showDeleted": "Mostrar eliminados",
+    "showingDeleted": "Mostrando eliminados",
+    "hideDeleted": "Ocultar eliminados",
+    "credit": "Crédito",
+    "noCredit": "Sin crédito",
+    "makeup": "Maquillaje",
+    "manageCatalogs": "Administrar catálogos",
+    "summary": {
+      "fees": "Comisiones",
+      "net": "Ingreso neto"
+    },
+    "columns": {
+      "date": "Fecha",
+      "client": "Cliente",
+      "employee": "Empleado",
+      "serviceArea": "Área",
+      "serviceType": "Servicio",
+      "payment": "Pago",
+      "amount": "Monto",
+      "credit": "Crédito",
+      "makeup": "Maquillaje"
+    },
+    "filters": {
+      "search": "Buscar ventas...",
+      "dateFrom": "Desde",
+      "dateTo": "Hasta",
+      "employee": "Empleado",
+      "client": "Cliente",
+      "serviceArea": "Área",
+      "paymentMethod": "Pago",
+      "credit": "Crédito"
+    },
+    "empty": {
+      "noSales": "No hay ventas registradas",
+      "addFirst": "Comenzá registrando tu primera venta",
+      "noMatch": "No se encontraron ventas con los filtros actuales"
+    },
+    "delete": {
+      "title": "¿Eliminar venta?",
+      "description": "Esta acción moverá la venta a la papelera. Podés restaurarla después si es necesario.",
+      "confirm": "Eliminar"
+    },
+    "form": {
+      "titleNew": "Nueva venta",
+      "titleEdit": "Editar venta",
+      "descNew": "Completá los datos de la nueva venta",
+      "descEdit": "Actualizá los datos de la venta",
+      "date": "Fecha",
+      "datePlaceholder": "Seleccioná una fecha",
+      "client": "Cliente",
+      "clientPlaceholder": "Seleccioná un cliente",
+      "clientEmpty": "Primero creá un cliente",
+      "employee": "Empleado",
+      "employeePlaceholder": "Seleccioná un empleado",
+      "employeeEmpty": "Primero creá un empleado",
+      "serviceArea": "Área de servicio",
+      "areaPlaceholder": "Seleccioná un área",
+      "areaEmpty": "Primero creá un área",
+      "serviceType": "Tipo de servicio",
+      "typePlaceholder": "Seleccioná un servicio",
+      "typeNoArea": "Primero seleccioná un área",
+      "typeEmpty": "No hay servicios en esta área",
+      "amount": "Monto",
+      "paymentMethod": "Método de pago",
+      "paymentMethodPlaceholder": "Seleccioná un método",
+      "paymentMethodEmpty": "Primero creá un método de pago",
+      "paymentFee": "Comisión bancaria",
+      "makeupLabel": "Servicio de maquillaje",
+      "feeInfo": "Comisión bancaria: {fee}%",
+      "isCredit": "Crédito",
+      "isCreditHint": "El cliente paga a fin de mes",
+      "observations": "Observaciones",
+      "observationsPlaceholder": "Opcional",
+      "submitNew": "Guardar venta",
+      "submitEdit": "Actualizar venta"
+    },
+    "paymentMethod": {
+      "title": "Métodos de pago",
+      "titleDesc": "Administrá los métodos de pago y sus comisiones bancarias",
+      "add": "Agregar método",
+      "new": "Nuevo método de pago",
+      "newDesc": "Creá un nuevo método de pago",
+      "edit": "Editar método de pago",
+      "editDesc": "Actualizá los datos del método de pago",
+      "key": "Clave interna",
+      "keyPlaceholder": "ej. efectivo, transferencia",
+      "keyHint": "Identificador único usado en el sistema. No se puede cambiar después.",
+      "name": "Nombre",
+      "namePlaceholder": "Ej. Efectivo, Tarjeta de crédito",
+      "feePct": "Comisión bancaria (%)",
+      "feePctPlaceholder": "Ej. 4",
+      "feePctHint": "Porcentaje que cobra el banco por este método de pago.",
+      "sortOrder": "Orden",
+      "sortOrderPlaceholder": "Ej. 1",
+      "isActive": "Activo",
+      "isActiveHint": "Los métodos inactivos no aparecen en los formularios de venta.",
+      "emptyNone": "No hay métodos de pago creados",
+      "emptyAdd": "Creá tu primer método de pago",
+      "deleteTitle": "¿Desactivar método de pago?",
+      "deleteDesc": "Se desactivará \"{name}\". Las ventas existentes no se modifican.",
+      "deleteConfirm": "Desactivar"
+    },
+    "client": {
+      "title": "Clientes",
+      "titleDesc": "Creá, editá y eliminá clientes",
+      "add": "Agregar cliente",
+      "new": "Nuevo cliente",
+      "newDesc": "Creá un nuevo cliente",
+      "edit": "Editar cliente",
+      "editDesc": "Actualizá los datos del cliente",
+      "name": "Nombre",
+      "namePlaceholder": "Nombre del cliente",
+      "phone": "Teléfono",
+      "phonePlaceholder": "Ej. +297 500 1234",
+      "notes": "Notas",
+      "notesPlaceholder": "Notas opcionales",
+      "emptyNone": "No hay clientes creados",
+      "emptyAdd": "Creá tu primer cliente",
+      "deleteTitle": "¿Eliminar cliente?",
+      "deleteDesc": "Se eliminará el cliente \"{name}\".",
+      "deleteConfirm": "Eliminar"
+    },
+    "employee": {
+      "title": "Empleados",
+      "titleDesc": "Creá, editá y eliminá empleados",
+      "add": "Agregar empleado",
+      "new": "Nuevo empleado",
+      "newDesc": "Creá un nuevo empleado",
+      "edit": "Editar empleado",
+      "editDesc": "Actualizá los datos del empleado",
+      "name": "Nombre",
+      "namePlaceholder": "Nombre del empleado",
+      "phone": "Teléfono",
+      "phonePlaceholder": "Ej. +297 500 1234",
+      "isActive": "Activo",
+      "isActiveHint": "Empleados inactivos no aparecen en los formularios de venta",
+      "emptyNone": "No hay empleados creados",
+      "emptyAdd": "Creá tu primer empleado",
+      "deleteTitle": "¿Eliminar empleado?",
+      "deleteDesc": "Se eliminará el empleado \"{name}\".",
+      "deleteConfirm": "Eliminar"
+    },
+    "area": {
+      "title": "Áreas de servicio",
+      "add": "Agregar área",
+      "new": "Nueva área",
+      "newDesc": "Creá una nueva área de servicio (ej. Peluquería, Uñas)",
+      "edit": "Editar área",
+      "editDesc": "Actualizá los datos del área",
+      "name": "Nombre",
+      "namePlaceholder": "Ej. Peluquería",
+      "sortOrder": "Orden",
+      "sortOrderPlaceholder": "0",
+      "emptyNone": "No hay áreas creadas",
+      "emptyAdd": "Creá tu primer área",
+      "deleteTitle": "¿Eliminar área?",
+      "deleteDesc": "Se eliminará el área \"{name}\".",
+      "deleteConfirm": "Eliminar"
+    },
+    "serviceType": {
+      "title": "Tipos de servicio",
+      "add": "Agregar servicio",
+      "new": "Nuevo servicio",
+      "newDesc": "Creá un nuevo tipo de servicio",
+      "edit": "Editar servicio",
+      "editDesc": "Actualizá los datos del servicio",
+      "name": "Nombre",
+      "namePlaceholder": "Ej. Secado",
+      "area": "Área",
+      "areaPlaceholder": "Seleccioná un área",
+      "price": "Precio ($)",
+      "pricePlaceholder": "0.00",
+      "isMakeup": "Maquillaje",
+      "isMakeupHint": "Marcar como servicio de maquillaje (servicios de la dueña)",
+      "emptyNone": "No hay servicios creados",
+      "emptyAdd": "Creá tu primer servicio",
+      "deleteTitle": "¿Eliminar servicio?",
+      "deleteDesc": "Se eliminará el servicio \"{name}\".",
+      "deleteConfirm": "Eliminar"
+    },
+    "service": {
+      "title": "Catálogo de servicios",
+      "titleDesc": "Administrá las áreas y tipos de servicio"
+    },
+    "toast": {
+      "created": "Venta creada",
+      "updated": "Venta actualizada",
+      "deleted": "Venta eliminada",
+      "restored": "Venta restaurada",
+      "clientCreated": "Cliente creado",
+      "clientUpdated": "Cliente actualizado",
+      "clientDeleted": "Cliente eliminado",
+      "employeeCreated": "Empleado creado",
+      "employeeUpdated": "Empleado actualizado",
+      "employeeDeleted": "Empleado eliminado",
+      "areaCreated": "Área creada",
+      "areaUpdated": "Área actualizada",
+      "areaDeleted": "Área eliminada",
+      "typeCreated": "Servicio creado",
+      "typeUpdated": "Servicio actualizado",
+      "typeDeleted": "Servicio eliminado",
+      "paymentMethodCreated": "Método de pago creado",
+      "paymentMethodUpdated": "Método de pago actualizado",
+      "paymentMethodDeleted": "Método de pago desactivado"
+    },
+    "error": {
+      "clientSave": "Error al guardar el cliente",
+      "clientDelete": "Error al eliminar el cliente",
+      "employeeSave": "Error al guardar el empleado",
+      "employeeDelete": "Error al eliminar el empleado",
+      "areaSave": "Error al guardar el área",
+      "areaDelete": "Error al eliminar el área",
+      "typeSave": "Error al guardar el tipo",
+      "typeDelete": "Error al eliminar el tipo",
+      "paymentMethodSave": "Error al guardar el método de pago",
+      "paymentMethodDelete": "Error al desactivar el método de pago"
+    }
+  },
+  "categories": {
+    "title": "Administrar categorías",
+    "description": "Creá, renombrá y eliminá categorías de gastos",
+    "form": {
+      "newLabel": "Nueva categoría",
+      "namePlaceholder": "Nombre de la categoría",
+      "submit": "Crear categoría",
+      "title": "Nueva categoría",
+      "desc": "Creá una categoría para organizar los gastos",
+      "name": "Nombre",
+      "namePlaceholder": "Ej. Lavandería"
+    },
+    "quick": {
+      "title": "Nueva categoría",
+      "description": "Creá una categoría para organizar los gastos",
+      "name": "Nombre",
+      "namePlaceholder": "Ej. Lavandería",
+      "submit": "Crear categoría"
+    },
+    "empty": {
+      "none": "No hay categorías creadas",
+      "createFirst": "Creá tu primera categoría para empezar a organizar los gastos"
+    },
+    "delete": {
+      "title": "¿Eliminar categoría?",
+      "description": "Se eliminará la categoría \"{name}\". Solo se puede eliminar si no hay gastos que la usen.",
+      "confirm": "Eliminar"
+    },
+    "toast": {
+      "created": "Categoría creada",
+      "renamed": "Categoría renombrada",
+      "deleted": "Categoría eliminada"
+    },
+    "error": {
+      "create": "Error al crear la categoría",
+      "rename": "Error al renombrar",
+      "delete": "Error al eliminar"
+    }
+  },
+  "users": {
+    "page": {
+      "title": "Usuarios",
+      "subtitle": "Administrá los usuarios del sistema"
+    },
+    "form": {
+      "cardTitle": "Detalles del usuario",
+      "cardDescription": "Ingresá los datos para la nueva cuenta de usuario.",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "usuario@ejemplo.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Mínimo 6 caracteres",
+      "displayName": "Nombre visible",
+      "displayNamePlaceholder": "Juan Pérez",
+      "role": "Rol",
+      "rolePlaceholder": "Seleccioná un rol",
+      "submit": "Crear usuario"
+    },
+    "roles": {
+      "super-admin": "Super Admin",
+      "admin": "Admin",
+      "user": "Usuario"
+    },
+    "accessDenied": {
+      "title": "Acceso denegado",
+      "description": "No tenés permiso para crear usuarios."
+    },
+    "list": {
+      "headers": {
+        "name": "Nombre",
+        "email": "Email",
+        "role": "Rol",
+        "created": "Creado"
+      },
+      "empty": "No hay usuarios"
+    },
+    "edit": {
+      "title": "Editar usuario",
+      "description": "Actualizá los datos del usuario.",
+      "submit": "Guardar cambios",
+      "emailLabel": "Correo electrónico"
+    },
+    "toast": {
+      "created": "Usuario creado exitosamente",
+      "createdDesc": "{displayName} ({email}) fue creado como {role}.",
+      "createError": "Error al crear usuario",
+      "updated": "Usuario actualizado exitosamente",
+      "updateError": "Error al actualizar usuario"
+    },
+    "validation": {
+      "emailRequired": "El correo es obligatorio",
+      "emailInvalid": "Correo electrónico inválido",
+      "passwordRequired": "La contraseña es obligatoria",
+      "passwordMin": "La contraseña debe tener al menos 6 caracteres",
+      "displayNameRequired": "El nombre visible es obligatorio",
+      "rolePermission": "No tenés permiso para asignar este rol"
+    }
+  }
+}

@@ -5,7 +5,9 @@ import { toast } from "sonner";
 import { Timestamp } from "firebase/firestore";
 import { CalendarIcon, Loader2, Plus } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS, es } from "date-fns/locale";
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +61,8 @@ function QuickCategoryDialog({
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("categories");
+  const common = useTranslations("common");
 
   async function handleCreate() {
     const trimmed = name.trim();
@@ -71,7 +75,7 @@ function QuickCategoryDialog({
       setName("");
       onOpenChange(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al crear");
+      setError(err instanceof Error ? err.message : t("error.create"));
     } finally {
       setLoading(false);
     }
@@ -81,17 +85,17 @@ function QuickCategoryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[350px]">
         <DialogHeader>
-          <DialogTitle>Nueva categoría</DialogTitle>
+          <DialogTitle>{t("quick.title")}</DialogTitle>
           <DialogDescription>
-            Creá una categoría para organizar los gastos
+            {t("quick.description")}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1">
-            <Label htmlFor="quick-cat-name">Nombre</Label>
+            <Label htmlFor="quick-cat-name">{t("quick.name")}</Label>
             <Input
               id="quick-cat-name"
-              placeholder="Ej. Lavandería"
+              placeholder={t("quick.namePlaceholder")}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
@@ -113,10 +117,10 @@ function QuickCategoryDialog({
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creando...
+                {common("creating")}
               </>
             ) : (
-              "Crear categoría"
+              t("quick.submit")
             )}
           </Button>
         </div>
@@ -139,21 +143,24 @@ type FormErrors = Partial<Record<string, string>>;
 
 export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
   const { user } = useAuth();
+  const locale = useLocale();
   const { categories } = useCategories(user?.uid ?? "");
   const { addExpense, editExpense } = useExpenses(
     new Date().getFullYear(),
     user?.uid ?? "",
   );
+  const t = useTranslations("expenses");
+  const common = useTranslations("common");
 
   const [fecha, setFecha] = useState<Date>(new Date());
   const [categoria, setCategoria] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [proveedorLugar, setProveedorLugar] = useState("");
-  const [metodoPago, setMetodoPago] = useState<PaymentMethod>("Efectivo");
+  const [metodoPago, setMetodoPago] = useState<PaymentMethod>("cash");
   const [monto, setMonto] = useState("");
-  const [tieneRecibo, setTieneRecibo] = useState<SiNo>("No");
+  const [tieneRecibo, setTieneRecibo] = useState<SiNo>("no");
   const [numeroReciboFoto, setNumeroReciboFoto] = useState("");
-  const [registradoPor, setRegistradoPor] = useState<RegisteredBy>("Otro");
+  const [registradoPor, setRegistradoPor] = useState<RegisteredBy>("other");
   const [observaciones, setObservaciones] = useState("");
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -231,10 +238,10 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
     try {
       if (isEditing && expense) {
         await editExpense(expense.id, formData);
-        toast.success("Gasto actualizado");
+        toast.success(t("toast.updated"));
       } else {
         await addExpense(formData);
-        toast.success("Gasto creado");
+        toast.success(t("toast.created"));
       }
       onOpenChange(false);
     } catch (err) {
@@ -251,15 +258,27 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
     return errors[field];
   }
 
+  const dateLocale = locale === "es" ? es : enUS;
+
+  function translatePaymentMethod(method: string): string {
+    return t(`paymentMethods.${method}`);
+  }
+
+  function translateRegisteredBy(person: string): string {
+    return t(`registeredBy.${person}`);
+  }
+
+  function translateReceipt(value: string): string {
+    return t(`hasReceipt.${value}`);
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Editar gasto" : "Nuevo gasto"}</DialogTitle>
+          <DialogTitle>{isEditing ? t("form.titleEdit") : t("form.titleNew")}</DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? "Actualizá los datos del gasto"
-              : "Completá los datos del nuevo gasto"}
+            {isEditing ? t("form.descEdit") : t("form.descNew")}
           </DialogDescription>
         </DialogHeader>
 
@@ -267,7 +286,7 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Fecha */}
             <div className="space-y-2">
-              <Label htmlFor="fecha">Fecha</Label>
+              <Label htmlFor="fecha">{t("form.date")}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -277,10 +296,10 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
                     type="button"
                   >
                     {fecha ? (
-                      format(fecha, "PPP", { locale: es })
+                      format(fecha, "PPP", { locale: dateLocale })
                     ) : (
                       <span className="text-muted-foreground">
-                        Seleccioná una fecha
+                        {t("form.datePlaceholder")}
                       </span>
                     )}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -305,7 +324,7 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
             {/* Categoría */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="categoria">Categoría</Label>
+                <Label htmlFor="categoria">{t("form.category")}</Label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -314,7 +333,7 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
                   onClick={() => setShowQuickCategory(true)}
                 >
                   <Plus className="mr-1 h-3 w-3" />
-                  Agregar nueva
+                  {t("form.addCategory")}
                 </Button>
               </div>
               <Select
@@ -328,19 +347,19 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
                 value={categoria}
                 disabled={categories.length === 0}
               >
-                <SelectTrigger id="categoria" aria-label="Categoría">
+                <SelectTrigger id="categoria" aria-label={t("form.category")}>
                   <SelectValue
                     placeholder={
                       categories.length === 0
-                        ? "Primero crea una categoría"
-                        : "Seleccioná una categoría"
+                        ? t("form.categoryEmpty")
+                        : t("form.categoryPlaceholder")
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.length === 0 ? (
                     <SelectItem value="__none__" disabled>
-                      Primero crea una categoría
+                      {t("form.categoryEmpty")}
                     </SelectItem>
                   ) : (
                     <>
@@ -356,7 +375,7 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
                           onClick={() => setShowQuickCategory(true)}
                         >
                           <Plus className="h-4 w-4" />
-                          Agregar nueva categoría
+                          {t("form.addCategory")}
                         </button>
                       </div>
                     </>
@@ -372,10 +391,10 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
 
             {/* Descripción */}
             <div className="space-y-2">
-              <Label htmlFor="descripcion">Descripción</Label>
+              <Label htmlFor="descripcion">{t("form.description")}</Label>
               <Input
                 id="descripcion"
-                placeholder="Opcional - ej. Shampoo profesional"
+                placeholder={t("form.descriptionPlaceholder")}
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
               />
@@ -388,10 +407,10 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
 
             {/* Proveedor / Lugar */}
             <div className="space-y-2">
-              <Label htmlFor="proveedorLugar">Proveedor / Lugar</Label>
+              <Label htmlFor="proveedorLugar">{t("form.provider")}</Label>
               <Input
                 id="proveedorLugar"
-                placeholder="Ej. Distribuidora Belleza S.A."
+                placeholder={t("form.providerPlaceholder")}
                 value={proveedorLugar}
                 onChange={(e) => setProveedorLugar(e.target.value)}
               />
@@ -404,13 +423,13 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
 
             {/* Monto */}
             <div className="space-y-2">
-              <Label htmlFor="monto">Monto ($)</Label>
+              <Label htmlFor="monto">{t("form.amount")}</Label>
               <Input
                 id="monto"
                 type="number"
                 step="0.01"
                 min="0"
-                placeholder="0.00"
+                placeholder={t("form.amountPlaceholder")}
                 value={monto}
                 onChange={(e) => setMonto(e.target.value)}
               />
@@ -423,15 +442,15 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
 
             {/* Método de Pago */}
             <div className="space-y-2">
-              <Label htmlFor="metodoPago">Método de pago</Label>
+              <Label htmlFor="metodoPago">{t("form.paymentMethod")}</Label>
               <Select onValueChange={(v) => setMetodoPago(v as PaymentMethod)} value={metodoPago}>
-                <SelectTrigger id="metodoPago" aria-label="Método de pago">
-                  <SelectValue placeholder="Seleccioná un método" />
+                <SelectTrigger id="metodoPago" aria-label={t("form.paymentMethod")}>
+                  <SelectValue placeholder={t("form.paymentMethodPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {PaymentMethods.map((method) => (
                     <SelectItem key={method} value={method}>
-                      {method}
+                      {translatePaymentMethod(method)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -445,15 +464,15 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
 
             {/* Tiene Recibo */}
             <div className="space-y-2">
-              <Label htmlFor="tieneRecibo">Tiene recibo</Label>
+              <Label htmlFor="tieneRecibo">{t("form.hasReceipt")}</Label>
               <Select onValueChange={(v) => setTieneRecibo(v as SiNo)} value={tieneRecibo}>
-                <SelectTrigger id="tieneRecibo" aria-label="Tiene recibo">
-                  <SelectValue placeholder="Seleccioná una opción" />
+                <SelectTrigger id="tieneRecibo" aria-label={t("form.hasReceipt")}>
+                  <SelectValue placeholder={t("form.hasReceiptPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {SiNoValues.map((v) => (
                     <SelectItem key={v} value={v}>
-                      {v}
+                      {translateReceipt(v)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -467,10 +486,10 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
 
             {/* Número de Recibo */}
             <div className="space-y-2">
-              <Label htmlFor="numeroReciboFoto">N° de recibo</Label>
+              <Label htmlFor="numeroReciboFoto">{t("form.receiptNumber")}</Label>
               <Input
                 id="numeroReciboFoto"
-                placeholder="Opcional - FAC-001"
+                placeholder={t("form.receiptNumberPlaceholder")}
                 value={numeroReciboFoto}
                 onChange={(e) => setNumeroReciboFoto(e.target.value)}
               />
@@ -483,15 +502,15 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
 
             {/* Registrado por */}
             <div className="space-y-2">
-              <Label htmlFor="registradoPor">Registrado por</Label>
+              <Label htmlFor="registradoPor">{t("form.registeredBy")}</Label>
               <Select onValueChange={(v) => setRegistradoPor(v as RegisteredBy)} value={registradoPor}>
-                <SelectTrigger id="registradoPor" aria-label="Registrado por">
-                  <SelectValue placeholder="¿Quién registra?" />
+                <SelectTrigger id="registradoPor" aria-label={t("form.registeredBy")}>
+                  <SelectValue placeholder={t("form.registeredByPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {RegisteredByValues.map((person) => (
                     <SelectItem key={person} value={person}>
-                      {person}
+                      {translateRegisteredBy(person)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -505,10 +524,10 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
 
             {/* Observaciones */}
             <div className="space-y-2">
-              <Label htmlFor="observaciones">Observaciones</Label>
+              <Label htmlFor="observaciones">{t("form.observations")}</Label>
               <Input
                 id="observaciones"
-                placeholder="Opcional"
+                placeholder={t("form.observationsPlaceholder")}
                 value={observaciones}
                 onChange={(e) => setObservaciones(e.target.value)}
               />
@@ -534,10 +553,10 @@ export function ExpenseForm({ open, onOpenChange, expense }: ExpenseFormProps) {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Guardando...
+                  {common("saving")}
                 </>
               ) : (
-                "Guardar gasto"
+                isEditing ? t("form.submitEdit") : t("form.submitNew")
               )}
             </Button>
           </form>
