@@ -1,28 +1,6 @@
 import { z } from "zod";
 import { Timestamp } from "firebase/firestore";
 
-// ── Payment Methods ──────────────────────────────────────────
-
-export const SalePaymentMethods = [
-  "cash",
-  "transfer",
-  "localCard",
-  "creditCard",
-  "paymentLink",
-] as const;
-
-export type SalePaymentMethod = (typeof SalePaymentMethods)[number];
-
-// ── Payment Fee Map ──────────────────────────────────────────
-
-export const PAYMENT_FEE_MAP: Record<string, number> = {
-  cash: 0,
-  transfer: 0,
-  localCard: 1.5,
-  creditCard: 4,
-  paymentLink: 4,
-};
-
 // ── Interfaces ───────────────────────────────────────────────
 
 export interface Sale {
@@ -37,7 +15,7 @@ export interface Sale {
   serviceTypeId: string;
   serviceTypeName: string;
   amount: number;
-  paymentMethod: SalePaymentMethod;
+  paymentMethod: string;
   paymentFeePct: number;
   isCredit: boolean;
   isMakeup: boolean;
@@ -54,7 +32,8 @@ export interface SaleFormData {
   employeeId: string;
   serviceAreaId: string;
   serviceTypeId: string;
-  paymentMethod: SalePaymentMethod;
+  paymentMethod: string;
+  paymentFeePct: number;
   isCredit: boolean;
   observations?: string;
 }
@@ -67,7 +46,8 @@ export const saleFormSchema = z.object({
   employeeId: z.string().min(1, "Seleccioná un empleado"),
   serviceAreaId: z.string().min(1, "Seleccioná un área de servicio"),
   serviceTypeId: z.string().min(1, "Seleccioná un tipo de servicio"),
-  paymentMethod: z.enum(SalePaymentMethods),
+  paymentMethod: z.string().min(1, "Seleccioná un método de pago"),
+  paymentFeePct: z.number().min(0, "El fee no puede ser negativo"),
   isCredit: z.boolean(),
   observations: z.string().optional(),
 });

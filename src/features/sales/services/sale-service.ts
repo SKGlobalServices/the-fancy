@@ -12,7 +12,6 @@ import {
   type DocumentData,
 } from "firebase/firestore";
 import type { Sale, SaleFormData } from "../types";
-import { PAYMENT_FEE_MAP } from "../types";
 
 const COLLECTION = "sales";
 
@@ -59,12 +58,11 @@ export async function createSale(
     typeName: string;
     typePrice: number;
     typeIsMakeup: boolean;
+    paymentMethodName: string;
   },
 ): Promise<string> {
   const now = Timestamp.now();
   const salesRef = collection(db, COLLECTION);
-
-  const feePct = PAYMENT_FEE_MAP[data.paymentMethod] ?? 0;
 
   const docRef = await addDoc(salesRef, {
     date: data.date,
@@ -78,7 +76,8 @@ export async function createSale(
     serviceTypeName: catalogs.typeName,
     amount: catalogs.typePrice,
     paymentMethod: data.paymentMethod,
-    paymentFeePct: feePct,
+    paymentMethodName: catalogs.paymentMethodName,
+    paymentFeePct: data.paymentFeePct,
     isCredit: data.isCredit,
     isMakeup: catalogs.typeIsMakeup,
     observations: data.observations ?? "",
@@ -114,9 +113,9 @@ export async function updateSale(
     updatedAt: Timestamp.now(),
   };
 
-  // Recompute payment fee if payment method changed
-  if (data.paymentMethod) {
-    updatePayload.paymentFeePct = PAYMENT_FEE_MAP[data.paymentMethod] ?? 0;
+  // Include paymentFeePct if provided (resolved by caller)
+  if (data.paymentFeePct !== undefined) {
+    updatePayload.paymentFeePct = data.paymentFeePct;
   }
 
   await updateDoc(docRef, updatePayload);

@@ -64,6 +64,7 @@ function createValidFormData() {
     serviceAreaId: "area-1",
     serviceTypeId: "type-1",
     paymentMethod: "cash" as const,
+    paymentFeePct: 0,
     isCredit: false,
   };
 }
@@ -291,10 +292,10 @@ describe("sale-service", () => {
       expect(result).toBe("new-sale-1");
     });
 
-    it("computes payment fee from map", async () => {
+    it("stores paymentFeePct from form data", async () => {
       mockAddDoc.mockResolvedValue({ id: "sale-2" });
 
-      const formData = { ...createValidFormData(), paymentMethod: "creditCard" as const };
+      const formData = { ...createValidFormData(), paymentFeePct: 4 };
       const catalogs = createValidCatalogs();
 
       await createSale(createMockDb(), formData, "user-abc", catalogs);
@@ -354,7 +355,7 @@ describe("sale-service", () => {
       expect(updateData.updatedAt).toBeDefined();
     });
 
-    it("recomputes payment fee when payment method changes", async () => {
+    it("stores paymentFeePct when provided in update", async () => {
       mockUpdateDoc.mockResolvedValue(undefined);
       mockGetDoc.mockResolvedValue({
         exists: true,
@@ -363,6 +364,7 @@ describe("sale-service", () => {
 
       await updateSale(createMockDb(), "sale-1", {
         paymentMethod: "creditCard",
+        paymentFeePct: 4,
       });
 
       const updateData = mockUpdateDoc.mock.calls[0][1];

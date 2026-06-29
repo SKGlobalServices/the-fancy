@@ -24,6 +24,7 @@ export interface UseSalesReturn {
       typeName: string;
       typePrice: number;
       typeIsMakeup: boolean;
+      paymentMethodName: string;
     },
   ) => Promise<string>;
   editSale: (id: string, data: Partial<SaleFormData>) => Promise<void>;
@@ -71,6 +72,7 @@ export function useSales(
         typeName: string;
         typePrice: number;
         typeIsMakeup: boolean;
+        paymentMethodName: string;
       },
     ): Promise<string> => {
       const db = getFirebaseDb();

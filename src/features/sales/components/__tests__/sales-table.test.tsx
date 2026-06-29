@@ -11,9 +11,10 @@ const mockUseClients = vi.fn();
 const mockUseEmployees = vi.fn();
 const mockUseServiceAreas = vi.fn();
 const mockUseServiceTypes = vi.fn();
+const mockUsePaymentMethods = vi.fn();
 
-vi.mock("../../hooks/use-sales", () => ({
-  useSales: (...args: any[]) => mockUseSales(...args),
+vi.mock("../../contexts/sales-context", () => ({
+  useSalesContext: (...args: any[]) => mockUseSales(...args),
 }));
 
 vi.mock("../../hooks/use-clients", () => ({
@@ -40,6 +41,10 @@ vi.mock("@/features/auth/hooks/use-auth", () => ({
   useAuth: vi.fn(() => ({
     user: { uid: "test-user", email: "test@test.com", displayName: "Test" },
   })),
+}));
+
+vi.mock("@/features/payment-methods/hooks/use-payment-methods", () => ({
+  usePaymentMethods: (...args: any[]) => mockUsePaymentMethods(...args),
 }));
 
 import { SalesTable } from "../sales-table";
@@ -154,6 +159,22 @@ function renderTable(
     addType: vi.fn(),
     editType: vi.fn(),
     removeType: vi.fn(),
+  });
+
+  mockUsePaymentMethods.mockReturnValue({
+    methods: [
+      { key: "cash", name: "Cash", feePct: 0, sortOrder: 1, isActive: true },
+      { key: "transfer", name: "Transfer", feePct: 2, sortOrder: 2, isActive: true },
+    ],
+    activeMethods: [
+      { key: "cash", name: "Cash", feePct: 0, sortOrder: 1, isActive: true },
+      { key: "transfer", name: "Transfer", feePct: 2, sortOrder: 2, isActive: true },
+    ],
+    isLoading: false,
+    error: null,
+    addMethod: vi.fn(),
+    editMethod: vi.fn(),
+    removeMethod: vi.fn(),
   });
 
   return renderWithI18n(<SalesTable />);

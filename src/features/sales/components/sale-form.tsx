@@ -36,18 +36,15 @@ import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 
-import { useSales } from "../hooks/use-sales";
+import { useSalesContext } from "../contexts/sales-context";
 import { useClients } from "../hooks/use-clients";
 import { useEmployees } from "../hooks/use-employees";
 import { useServiceAreas } from "../hooks/use-service-areas";
 import { useServiceTypes } from "../hooks/use-service-types";
+import { usePaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods";
 import { useAuth } from "@/features/auth/hooks/use-auth";
-import type { Sale, SalePaymentMethod } from "../types";
-import {
-  SalePaymentMethods,
-  PAYMENT_FEE_MAP,
-  saleFormSchema,
-} from "../types";
+import type { Sale } from "../types";
+import { saleFormSchema } from "../types";
 import { formatCurrency } from "@/shared/lib/currency";
 
 // ── Props ────────────────────────────────────────────────────
@@ -69,7 +66,8 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
   const { employees } = useEmployees(user?.uid ?? "");
   const { areas } = useServiceAreas(user?.uid ?? "");
   const { types } = useServiceTypes(user?.uid ?? "");
-  const { addSale, editSale } = useSales(user?.uid ?? "");
+  const { activeMethods: paymentMethods } = usePaymentMethods();
+  const { addSale, editSale } = useSalesContext();
   const t = useTranslations("sales");
   const common = useTranslations("common");
 
@@ -78,7 +76,7 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
   const [employeeId, setEmployeeId] = useState("");
   const [serviceAreaId, setServiceAreaId] = useState("");
   const [serviceTypeId, setServiceTypeId] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<SalePaymentMethod>("cash");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [isCredit, setIsCredit] = useState(false);
   const [observations, setObservations] = useState("");
 
@@ -97,7 +95,11 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
 
   const amount = selectedType?.price ?? 0;
   const isMakeup = selectedType?.isMakeup ?? false;
-  const paymentFeePct = PAYMENT_FEE_MAP[paymentMethod] ?? 0;
+  const selectedPaymentMethod = useMemo(() => {
+    if (!paymentMethod) return null;
+    return paymentMethods.find((pm) => pm.id === paymentMethod) ?? null;
+  }, [paymentMethods, paymentMethod]);
+  const paymentFeePct = selectedPaymentMethod?.feePct ?? 0;
 
   // ── Filtered service types by selected area ─────────────
 
@@ -115,7 +117,7 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
       setEmployeeId(sale.employeeId);
       setServiceAreaId(sale.serviceAreaId);
       setServiceTypeId(sale.serviceTypeId);
-      setPaymentMethod(sale.paymentMethod);
+      setPaymentMethod(sale.paymentMethod ?? "");
       setIsCredit(sale.isCredit);
       setObservations(sale.observations ?? "");
     }
@@ -130,7 +132,7 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
       setEmployeeId("");
       setServiceAreaId("");
       setServiceTypeId("");
-      setPaymentMethod("cash");
+      setPaymentMethod("");
       setIsCredit(false);
       setObservations("");
       setErrors({});
@@ -179,6 +181,7 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
       serviceAreaId,
       serviceTypeId,
       paymentMethod,
+      paymentFeePct,
       isCredit,
       observations: observations || undefined,
     };
@@ -193,8 +196,9 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
         const employee = employees.find((e) => e.id === employeeId);
         const area = areas.find((a) => a.id === serviceAreaId);
         const type = types.find((t) => t.id === serviceTypeId);
+        const pm = paymentMethods.find((m) => m.id === paymentMethod);
 
-        if (!client || !employee || !area || !type) {
+        if (!client || !employee || !area || !type || !pm) {
           throw new Error("Error al resolver datos del catálogo");
         }
 
@@ -205,6 +209,7 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
           typeName: type.name,
           typePrice: type.price,
           typeIsMakeup: type.isMakeup,
+          paymentMethodName: pm.name,
         });
         toast.success(t("toast.created"));
       }
@@ -225,8 +230,9 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
 
   const dateLocale = locale === "es" ? es : enUS;
 
-  function translatePaymentMethod(method: string): string {
-    return t(`paymentMethods.${method}`);
+  function getPaymentMethodName(methodId: string): string {
+    const pm = paymentMethods.find((m) => m.id === methodId);
+    return pm?.name ?? methodId;
   }
 
   return (
@@ -413,30 +419,36 @@ export function SaleForm({ open, onOpenChange, sale }: SaleFormProps) {
               </div>
             )}
 
-            {/* Payment Method */}
-            <div className="space-y-2">
-              <Label htmlFor="paymentMethod">{t("form.paymentMethod")}</Label>
-              <Select onValueChange={(v) => setPaymentMethod(v as SalePaymentMethod)} value={paymentMethod}>
-                <SelectTrigger id="paymentMethod" aria-label={t("form.paymentMethod")}>
-                  <SelectValue placeholder={t("form.paymentMethodPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {SalePaymentMethods.map((method) => (
-                    <SelectItem key={method} value={method}>
-                      {translatePaymentMethod(method)}
-                      {PAYMENT_FEE_MAP[method] > 0 && (
-                        <span className="ml-2 text-xs text-muted-foreground">
-                          ({PAYMENT_FEE_MAP[method]}%)
-                        </span>
-                      )}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {getError("paymentMethod") && (
-                <p className="text-sm text-destructive">{getError("paymentMethod")}</p>
-              )}
-            </div>
+              {/* Payment Method */}
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod">{t("form.paymentMethod")}</Label>
+                <Select onValueChange={setPaymentMethod} value={paymentMethod}>
+                  <SelectTrigger id="paymentMethod" aria-label={t("form.paymentMethod")}>
+                    <SelectValue placeholder={t("form.paymentMethodPlaceholder")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {paymentMethods.length === 0 ? (
+                      <SelectItem value="__none__" disabled>
+                        {t("form.paymentMethodEmpty")}
+                      </SelectItem>
+                    ) : (
+                      paymentMethods.map((pm) => (
+                        <SelectItem key={pm.id} value={pm.id}>
+                          {pm.name}
+                          {pm.feePct > 0 && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              ({pm.feePct}%)
+                            </span>
+                          )}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+                {getError("paymentMethod") && (
+                  <p className="text-sm text-destructive">{getError("paymentMethod")}</p>
+                )}
+              </div>
 
             {/* Is Credit */}
             <div className="flex items-center justify-between rounded-lg border p-3">

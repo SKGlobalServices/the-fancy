@@ -74,15 +74,15 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 
-import { useSales } from "../hooks/use-sales";
+import { useSalesContext } from "../contexts/sales-context";
 import { useClients } from "../hooks/use-clients";
 import { useEmployees } from "../hooks/use-employees";
 import { useServiceAreas } from "../hooks/use-service-areas";
 import { useServiceTypes } from "../hooks/use-service-types";
+import { usePaymentMethods } from "@/features/payment-methods/hooks/use-payment-methods";
+import { SaleForm } from "./sale-form";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import type { Sale } from "../types";
-import { SalePaymentMethods } from "../types";
-import { SaleForm } from "./sale-form";
 import { formatCurrency } from "@/shared/lib/currency";
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -97,25 +97,11 @@ function formatDate(ts: any, localeKey: string): string {
 
 const columnHelper = createColumnHelper<Sale>();
 
-// ── Payment method info display ──────────────────────────────
-
-function PaymentInfo({ method, fee }: { method: string; fee: number }) {
-  const t = useTranslations("sales");
-  return (
-    <span className="text-xs text-muted-foreground" title={t("form.feeInfo", { fee })}>
-      {t(`paymentMethods.${method}`)}
-      {fee > 0 && <span className="ml-1">({fee}%)</span>}
-    </span>
-  );
-}
-
 // ── Component ────────────────────────────────────────────────
 
 export function SalesTable() {
   const { user } = useAuth();
   const locale = useLocale();
-  const today = useMemo(() => new Date(), []);
-
   const {
     sales,
     isLoading,
@@ -126,16 +112,16 @@ export function SalesTable() {
     restoreSale,
     showDeleted,
     setShowDeleted,
-  } = useSales(user?.uid ?? "");
+  } = useSalesContext();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 25 });
 
-  // Default filter: today
-  const [dateFrom, setDateFrom] = useState<Date | undefined>(today);
-  const [dateTo, setDateTo] = useState<Date | undefined>(today);
+  // Default: no date filter (show all)
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
 
   const [editingSale, setEditingSale] = useState<Sale | undefined>();
   const [showForm, setShowForm] = useState(false);
@@ -151,6 +137,7 @@ export function SalesTable() {
   const { employees } = useEmployees(user?.uid ?? "");
   const { areas } = useServiceAreas(user?.uid ?? "");
   const { types } = useServiceTypes(user?.uid ?? "");
+  const { activeMethods: paymentMethods } = usePaymentMethods();
 
   const t = useTranslations("sales");
   const common = useTranslations("common");
@@ -213,10 +200,18 @@ export function SalesTable() {
     globalFilter,
   ]);
 
-  // ── Translate helpers ────────────────────────────────────
+  // ── Payment method lookup ─────────────────────────────────
 
-  function translatePaymentMethod(method: string): string {
-    return t(`paymentMethods.${method}`);
+  const paymentMethodNames = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const pm of paymentMethods) {
+      map.set(pm.id, pm.name);
+    }
+    return map;
+  }, [paymentMethods]);
+
+  function getPaymentMethodName(methodId: string): string {
+    return paymentMethodNames.get(methodId) ?? methodId;
   }
 
   // ── Columns ──────────────────────────────────────────────
@@ -252,7 +247,7 @@ export function SalesTable() {
         header: t("columns.payment"),
         cell: (info) => (
           <div className="flex flex-col">
-            <span>{translatePaymentMethod(info.getValue())}</span>
+            <span>{getPaymentMethodName(info.getValue())}</span>
             {info.row.original.paymentFeePct > 0 && (
               <span className="text-xs text-muted-foreground">
                 {info.row.original.paymentFeePct}%
@@ -409,8 +404,8 @@ export function SalesTable() {
 
   const hasFilters =
     globalFilter ||
-    dateFrom !== today ||
-    dateTo !== today ||
+    dateFrom !== undefined ||
+    dateTo !== undefined ||
     employeeFilter !== "all" ||
     clientFilter !== "all" ||
     areaFilter !== "all" ||
@@ -419,8 +414,8 @@ export function SalesTable() {
 
   function clearFilters() {
     setGlobalFilter("");
-    setDateFrom(today);
-    setDateTo(today);
+    setDateFrom(undefined);
+    setDateTo(undefined);
     setEmployeeFilter("all");
     setClientFilter("all");
     setAreaFilter("all");
@@ -622,9 +617,9 @@ export function SalesTable() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{common("all")}</SelectItem>
-                {SalePaymentMethods.map((method) => (
-                  <SelectItem key={method} value={method}>
-                    {translatePaymentMethod(method)}
+                {paymentMethods.map((pm) => (
+                  <SelectItem key={pm.id} value={pm.id}>
+                    {pm.name}
                   </SelectItem>
                 ))}
               </SelectContent>

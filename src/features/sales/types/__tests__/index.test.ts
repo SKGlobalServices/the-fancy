@@ -6,7 +6,6 @@ import {
   employeeSchema,
   serviceAreaSchema,
   serviceTypeSchema,
-  SalePaymentMethods,
 } from "../index";
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -18,7 +17,8 @@ function validSaleForm() {
     employeeId: "emp-1",
     serviceAreaId: "area-1",
     serviceTypeId: "type-1",
-    paymentMethod: "cash" as const,
+    paymentMethod: "cash",
+    paymentFeePct: 0,
     isCredit: false,
   };
 }
@@ -60,16 +60,6 @@ describe("saleFormSchema", () => {
       const { observations: _, ...rest } = validSaleForm();
       const result = saleFormSchema.safeParse(rest);
       expect(result.success).toBe(true);
-    });
-
-    it("accepts all payment methods", () => {
-      for (const method of SalePaymentMethods) {
-        const result = saleFormSchema.safeParse({
-          ...validSaleForm(),
-          paymentMethod: method,
-        });
-        expect(result.success).toBe(true);
-      }
     });
 
     it("accepts isCredit true", () => {
@@ -141,14 +131,6 @@ describe("saleFormSchema", () => {
     it("rejects missing date", () => {
       const { date: _, ...rest } = validSaleForm();
       const result = saleFormSchema.safeParse(rest);
-      expect(result.success).toBe(false);
-    });
-
-    it("rejects invalid paymentMethod", () => {
-      const result = saleFormSchema.safeParse({
-        ...validSaleForm(),
-        paymentMethod: "bitcoin",
-      });
       expect(result.success).toBe(false);
     });
 

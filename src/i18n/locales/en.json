@@ -22,7 +22,8 @@
     "openMenu": "Open menu",
     "yes": "Yes",
     "no": "No",
-    "restore": "Restore"
+    "restore": "Restore",
+    "inactive": "Inactive"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -217,6 +218,7 @@
       "amount": "Amount",
       "paymentMethod": "Payment Method",
       "paymentMethodPlaceholder": "Select a method",
+      "paymentMethodEmpty": "Create a payment method first",
       "paymentFee": "Bank fee",
       "makeupLabel": "Makeup service",
       "feeInfo": "Bank fee: {fee}%",
@@ -227,12 +229,31 @@
       "submitNew": "Save Sale",
       "submitEdit": "Update Sale"
     },
-    "paymentMethods": {
-      "cash": "Cash",
-      "transfer": "Transfer",
-      "localCard": "Local Card",
-      "creditCard": "Credit Card",
-      "paymentLink": "Payment Link"
+    "paymentMethod": {
+      "title": "Payment Methods",
+      "titleDesc": "Manage payment methods and their bank fees",
+      "add": "Add Method",
+      "new": "New Payment Method",
+      "newDesc": "Create a new payment method",
+      "edit": "Edit Payment Method",
+      "editDesc": "Update payment method details",
+      "key": "Internal Key",
+      "keyPlaceholder": "e.g. cash, transfer",
+      "keyHint": "Unique system identifier. Cannot be changed later.",
+      "name": "Name",
+      "namePlaceholder": "e.g. Cash, Credit Card",
+      "feePct": "Bank Fee (%)",
+      "feePctPlaceholder": "e.g. 4",
+      "feePctHint": "Percentage charged by the bank for this payment method.",
+      "sortOrder": "Order",
+      "sortOrderPlaceholder": "e.g. 1",
+      "isActive": "Active",
+      "isActiveHint": "Inactive methods won't appear in sales forms.",
+      "emptyNone": "No payment methods created",
+      "emptyAdd": "Create your first payment method",
+      "deleteTitle": "Deactivate payment method?",
+      "deleteDesc": "\"{name}\" will be deactivated. Existing sales are not affected.",
+      "deleteConfirm": "Deactivate"
     },
     "client": {
       "title": "Clients",
@@ -332,7 +353,10 @@
       "areaDeleted": "Area deleted",
       "typeCreated": "Service created",
       "typeUpdated": "Service updated",
-      "typeDeleted": "Service deleted"
+      "typeDeleted": "Service deleted",
+      "paymentMethodCreated": "Payment method created",
+      "paymentMethodUpdated": "Payment method updated",
+      "paymentMethodDeleted": "Payment method deactivated"
     },
     "error": {
       "clientSave": "Failed to save client",
@@ -342,7 +366,9 @@
       "areaSave": "Failed to save area",
       "areaDelete": "Failed to delete area",
       "typeSave": "Failed to save type",
-      "typeDelete": "Failed to delete type"
+      "typeDelete": "Failed to delete type",
+      "paymentMethodSave": "Failed to save payment method",
+      "paymentMethodDelete": "Failed to deactivate payment method"
     }
   },
   "categories": {

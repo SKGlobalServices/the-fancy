@@ -1,9 +1,6 @@
 export {
-  SalePaymentMethods,
-  PAYMENT_FEE_MAP,
   saleFormSchema,
   type Sale,
-  type SalePaymentMethod,
   type SaleFormData,
 } from "./sale";
 

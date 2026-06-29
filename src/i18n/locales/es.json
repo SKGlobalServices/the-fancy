@@ -22,7 +22,8 @@
     "openMenu": "Abrir menú",
     "yes": "Sí",
     "no": "No",
-    "restore": "Restaurar"
+    "restore": "Restaurar",
+    "inactive": "Inactivo"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -217,6 +218,7 @@
       "amount": "Monto",
       "paymentMethod": "Método de pago",
       "paymentMethodPlaceholder": "Seleccioná un método",
+      "paymentMethodEmpty": "Primero creá un método de pago",
       "paymentFee": "Comisión bancaria",
       "makeupLabel": "Servicio de maquillaje",
       "feeInfo": "Comisión bancaria: {fee}%",
@@ -227,12 +229,31 @@
       "submitNew": "Guardar venta",
       "submitEdit": "Actualizar venta"
     },
-    "paymentMethods": {
-      "cash": "Efectivo",
-      "transfer": "Transferencia",
-      "localCard": "Tarjeta local",
-      "creditCard": "Tarjeta de crédito",
-      "paymentLink": "Link de pago"
+    "paymentMethod": {
+      "title": "Métodos de pago",
+      "titleDesc": "Administrá los métodos de pago y sus comisiones bancarias",
+      "add": "Agregar método",
+      "new": "Nuevo método de pago",
+      "newDesc": "Creá un nuevo método de pago",
+      "edit": "Editar método de pago",
+      "editDesc": "Actualizá los datos del método de pago",
+      "key": "Clave interna",
+      "keyPlaceholder": "ej. efectivo, transferencia",
+      "keyHint": "Identificador único usado en el sistema. No se puede cambiar después.",
+      "name": "Nombre",
+      "namePlaceholder": "Ej. Efectivo, Tarjeta de crédito",
+      "feePct": "Comisión bancaria (%)",
+      "feePctPlaceholder": "Ej. 4",
+      "feePctHint": "Porcentaje que cobra el banco por este método de pago.",
+      "sortOrder": "Orden",
+      "sortOrderPlaceholder": "Ej. 1",
+      "isActive": "Activo",
+      "isActiveHint": "Los métodos inactivos no aparecen en los formularios de venta.",
+      "emptyNone": "No hay métodos de pago creados",
+      "emptyAdd": "Creá tu primer método de pago",
+      "deleteTitle": "¿Desactivar método de pago?",
+      "deleteDesc": "Se desactivará \"{name}\". Las ventas existentes no se modifican.",
+      "deleteConfirm": "Desactivar"
     },
     "client": {
       "title": "Clientes",
@@ -332,7 +353,10 @@
       "areaDeleted": "Área eliminada",
       "typeCreated": "Servicio creado",
       "typeUpdated": "Servicio actualizado",
-      "typeDeleted": "Servicio eliminado"
+      "typeDeleted": "Servicio eliminado",
+      "paymentMethodCreated": "Método de pago creado",
+      "paymentMethodUpdated": "Método de pago actualizado",
+      "paymentMethodDeleted": "Método de pago desactivado"
     },
     "error": {
       "clientSave": "Error al guardar el cliente",
@@ -342,7 +366,9 @@
       "areaSave": "Error al guardar el área",
       "areaDelete": "Error al eliminar el área",
       "typeSave": "Error al guardar el tipo",
-      "typeDelete": "Error al eliminar el tipo"
+      "typeDelete": "Error al eliminar el tipo",
+      "paymentMethodSave": "Error al guardar el método de pago",
+      "paymentMethodDelete": "Error al desactivar el método de pago"
     }
   },
   "categories": {

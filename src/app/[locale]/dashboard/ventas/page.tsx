@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Plus, ShoppingCart, Users, Briefcase, Wrench } from "lucide-react";
+import { Plus, ShoppingCart, Users, Briefcase, Wrench, CreditCard } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 
@@ -15,12 +15,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { useAuth } from "@/features/auth/hooks/use-auth";
-import { useSales } from "@/features/sales/hooks/use-sales";
+import { SalesProvider, useSalesContext } from "@/features/sales/contexts/sales-context";
 import { SalesTable } from "@/features/sales/components/sales-table";
 import { SaleForm } from "@/features/sales/components/sale-form";
 import { ClientManager } from "@/features/sales/components/client-manager";
 import { EmployeeManager } from "@/features/sales/components/employee-manager";
 import { ServiceManager } from "@/features/sales/components/service-manager";
+import { PaymentMethodManager } from "@/features/payment-methods/components/payment-method-manager";
 import { formatCurrency } from "@/shared/lib/currency";
 
 const MONTH_NAMES: Record<string, string[]> = {
@@ -35,15 +36,24 @@ const MONTH_NAMES: Record<string, string[]> = {
 };
 
 export default function VentasPage() {
+  return (
+    <SalesProvider>
+      <VentasPageContent />
+    </SalesProvider>
+  );
+}
+
+function VentasPageContent() {
   const { user } = useAuth();
   const locale = useLocale();
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
-  const { sales } = useSales(user?.uid ?? "");
+  const { sales } = useSalesContext();
   const [showForm, setShowForm] = useState(false);
   const [showClients, setShowClients] = useState(false);
   const [showEmployees, setShowEmployees] = useState(false);
   const [showServices, setShowServices] = useState(false);
+  const [showPaymentMethods, setShowPaymentMethods] = useState(false);
   const t = useTranslations("sales");
   const monthNames = MONTH_NAMES[locale] ?? MONTH_NAMES.en;
 
@@ -101,6 +111,10 @@ export default function VentasPage() {
             <DropdownMenuItem onClick={() => setShowServices(true)}>
               <ShoppingCart className="mr-2 h-4 w-4" />
               {t("service.title")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowPaymentMethods(true)}>
+              <CreditCard className="mr-2 h-4 w-4" />
+              {t("paymentMethod.title")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -185,6 +199,10 @@ export default function VentasPage() {
       <ServiceManager
         open={showServices}
         onOpenChange={setShowServices}
+      />
+      <PaymentMethodManager
+        open={showPaymentMethods}
+        onOpenChange={setShowPaymentMethods}
       />
 
       {/* Mobile catalog buttons */}
